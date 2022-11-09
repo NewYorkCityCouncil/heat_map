@@ -5,7 +5,10 @@
 #' 
 #' IF YOU DO NOT WANT TO INSTALL ANY OF THESE PACKAGES, DO NOT RUN THIS CODE.
 
-list.of.packages <- c("tidyverse", "janitor")
+list.of.packages <- c("tidyverse", "janitor", "velox", "raster", "sf", "leaflet", "XML", "methods", "lubridate", 
+                      "rgdal", "ggplot2", "spatialEco", "htmlwidgets")
+
+options(scipen = 999)
 
 # checks if packages has been previously installed
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
