@@ -49,7 +49,7 @@
 
 
 # Central Park
-cp_raw <- read_csv("data/input/Ground_Monitor_Temps_NYC/central_park_temp.csv") %>% 
+cp_raw <- read_csv("data/input/raw/Ground_Monitor_Temps_NYC/central_park_temp.csv") %>% 
   janitor::clean_names() %>% 
   dplyr::select(station, date, hourly_dry_bulb_temperature) %>% 
   mutate(name = "Central Park")
@@ -58,7 +58,7 @@ cp_raw <- cp_raw %>%
   filter(!is.na(date))
 
 # La Guardia
-lag_raw <- read_csv("data/input/Ground_Monitor_Temps_NYC/laguardia_temp.csv") %>% 
+lag_raw <- read_csv("data/input/raw/Ground_Monitor_Temps_NYC/laguardia_temp.csv") %>% 
   janitor::clean_names() %>% 
   dplyr::select(station, date, hourly_dry_bulb_temperature) %>% 
   mutate(name = "La Guardia Airport")
@@ -75,15 +75,15 @@ lag_raw <- lag_raw %>%
 # La Guardia
 # source: https://data.cityofnewyork.us/City-Government/Airport-Polygon/xfhz-rhsk
 
-lag_shape <- read_sf("data/input/Airport Polygon/geo_export_3743182d-8d50-4636-9732-390060735bb9.shp") %>% 
+lag_shape <- read_sf("https://data.cityofnewyork.us/api/geospatial/xfhz-rhsk?method=export&format=GeoJSON") %>% 
   filter(name == "La Guardia Airport") %>% 
   dplyr::select(name, geometry)
 
 
 # Central Park
-# source: https://data.cityofnewyork.us/City-Government/Parks-Properties/k2ya-ucmv
+# source: https://nycopendata.socrata.com/Recreation/Parks-Properties/enfh-gkve
 
-cp_shape <- st_read("data/input/Parks Properties/geo_export_544f716b-41c4-43d7-aa7e-32c264ab6fd6.shp") %>% 
+cp_shape <- st_read("https://nycopendata.socrata.com/api/geospatial/enfh-gkve?method=export&format=GeoJSON") %>% 
   filter(signname == "Central Park") %>% 
   dplyr::select(signname, geometry) %>% 
   rename(name = signname)
@@ -116,7 +116,7 @@ temp_func_2 <-function(rastername) {
 #load in all raster files and apply the temp func to get mean, max and min temperatures
 # within the sf geometry
 
-filenames <- list.files("data/input/landsat_st", pattern="*.tif", full.names=TRUE)
+filenames <- list.files("data/input/raw/landsat_final_used_values copy/", pattern="*.tif", full.names=TRUE)
 ldf_r <- lapply(filenames, raster)
 res <- lapply(ldf_r, temp_func_2)
 
@@ -169,7 +169,7 @@ raster_shape <- bind_rows(res, .id = "column_label") %>%
 
 # Read in all xmlfiles, and use TreeParse to separate the files into subsettable
 # parts
-xmlfilenames <- list.files("data/input/landsat_xml", pattern="*.xml", full.names=TRUE)
+xmlfilenames <- list.files("data/input/raw/landsat_xml", pattern="*.xml", full.names=TRUE)
 xmldf <- lapply(xmlfilenames, xmlTreeParse)
 xmldf <- lapply(xmldf, xmlRoot)
 
