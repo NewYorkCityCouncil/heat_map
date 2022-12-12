@@ -5,8 +5,8 @@
 #' 
 #' IF YOU DO NOT WANT TO INSTALL ANY OF THESE PACKAGES, DO NOT RUN THIS CODE.
 
-list.of.packages <- c("tidyverse", "janitor", "velox", "raster", "sf", "leaflet", "XML", "methods", "lubridate", 
-                      "rgdal", "ggplot2", "spatialEco", "htmlwidgets")
+list.of.packages <- c("tidyverse", "janitor", "raster", "sf", "leaflet", "XML", "methods", "lubridate", 
+                      "rgdal", "ggplot2", "htmlwidgets")
 
 options(scipen = 999)
 
@@ -18,6 +18,9 @@ if(length(new.packages)) install.packages(new.packages)
 
 # packages are loaded
 lapply(list.of.packages, require, character.only = TRUE)
+
+#devtools::install_version("velox", version = "0.2.0") 
+#library(velox)
 
 # function to unzip shapefiles
 unzip_sf <- function(zip_url) {
@@ -34,6 +37,25 @@ unzip_sf <- function(zip_url) {
   unlist(temp)
   unlist(temp2)
   return(your_SHP_file)
+}
+
+# Function to Convert Kelving to Fahrenheit
+k_to_f <- function(temp) { fahrenheight <- ((temp - 273) * (9/5)) + 32  }
+
+temp_func_2 <-function(rastername) {
+  rstr <- velox(rastername)
+  sf <- st_transform(shapes, crs(rastername))
+  temps <- rstr$extract(sp=sf$geometry)
+  mean_temp <- paste0('mean_temp')
+  max_temp <- paste0('max_temp')
+  min_temp <- paste0('min_temp')
+  sf[,mean_temp] <- sapply(temps, mean, na.rm = TRUE)
+  sf[,mean_temp] <- k_to_f(sf[,mean_temp]/10)
+  sf[,max_temp] <- sapply(temps, max)
+  sf[,max_temp] <- k_to_f(sf[,max_temp]/10)
+  sf[,min_temp] <- sapply(temps, min)
+  sf[,min_temp] <- k_to_f(sf[,min_temp]/10)
+  sf
 }
 
 # remove created variables for packages
