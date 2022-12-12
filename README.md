@@ -1,22 +1,39 @@
-# resiliency
-for resiliency sustainability group - looking at heat and flooding areas
+# NYC Heat Map (Surface Temperature)
 
-We are focusing on the summer months from 2014 to 2019 in NYC.
+Elaborate on the intent of reason for the project
+- source for general public to access NYC surface temperature
+- collect and store NYC surface temperature for NYC Council use. We are focusing on the summer months from 2014 to 2019 (update) in NYC.
+- Addressing Summer heat vulernability is a topic of interest for the Council. 
 
-## Data Structure
+## Data Sources & Outputs
 
 - data
   - input
     - Parks Properties (https://data.cityofnewyork.us/City-Government/Parks-Properties/k2ya-ucmv)
     - Airport Polygon (https://data.cityofnewyork.us/City-Government/Airport-Polygon/xfhz-rhsk)
-    - landsat_st (from Landsat folder on G drive)
-    - Ground_Monitor_Temps_NYC (from Landsat folder on G drive)
+    - landsat_st (from Landsat folder on G drive) (update to repo)
+    - Ground_Monitor_Temps_NYC (from Landsat folder on G drive) (update to repo)
+  - outputs
+
+## Running Code
+
+- code
+ - 
+
+https://www.usgs.gov/landsat-missions/landsat-data-access#C2ARD
+
+2 ways to get analysis ready surface temperature product from USGS - through at no charge download using Earth Explorer or through an aws s3 requester pays bucket
+https://www.usgs.gov/landsat-missions/landsat-commercial-cloud-data-access
+
+citation: Landsat Level-2 Surface Temperature Science Product courtesy of the U.S. Geological Survey.
 
 ## Getting Data
 
-- US Landsat 4-8 ARD: [Provisional Surface Temperature (ST)](https://www.usgs.gov/centers/eros/science/usgs-eros-archive-landsat-archives-landsat-level-2-provisional-surface?qt-science_center_objects=0#qt-science_center_objects)
+- US Landsat 4-8 ARD: [Provisional Surface Temperature (ST)](https://www.usgs.gov/landsat-missions/landsat-collection-2-surface-temperature)
   1. Make an account at (https://earthexplorer.usgs.gov/)
   2. Install [Bulk Download Application](https://earthexplorer.usgs.gov/bulk)
+  
+  ------- up to here ------
   3. On Earth Exloper site search panel, select desired criteria:
       - Date Range: 2014 to 2020
       - Datasets: US Landsat 4-8 ARD
