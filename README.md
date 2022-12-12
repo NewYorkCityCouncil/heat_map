@@ -7,13 +7,15 @@ Using satellite data from the US Geological Survey’s Landsat 8 satellite, the 
 
 The result is clear: some parts of the city are hotter during the summer months than others, particularly in south/southeast Brooklyn and southeast Queens.
 
-- Download NYC Summer 2018-2022 surface temperature data. (add link)
+## Quick Links 
 
-- Learn how to download surface temperature data from the USGS. (add link)
+#### - Download NYC Summer 2018-2022 surface temperature data. (add link)
 
-- Download the NYC heat map. (add link)
+#### - Learn how to download surface temperature data from the USGS. (add link)
 
-- FAQ (add link or section)
+#### - Download the NYC heat map. (add link)
+
+#### - FAQ (add link or section)
 
 
 ## Methodology
