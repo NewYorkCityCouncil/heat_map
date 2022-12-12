@@ -15,7 +15,7 @@ Elaborate on the intent of reason for the project
     - Ground_Monitor_Temps_NYC (from Landsat folder on G drive) (update to repo)
   - outputs
 
-## Running Code
+## Code
 
 - code
  - 
