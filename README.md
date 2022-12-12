@@ -22,13 +22,14 @@ The result is clear: some parts of the city are hotter during the summer months 
 
 After discussion with a NASA-affiliated expert, we've determined that actually presenting the true surface temperature, regardless of whether it's measured in Kelvin, Celsius or Fahrenheit, will not be very informative for us or end users; what does it mean if the surface temperature is 95 degrees F on a summer day? Is that hold or cold? Additionally, relying on exact temperatures increases the likelihood of inaccuracy due to the susceptibility of the data to cloud coverage and other factors that obscure satelite access to the ground. However, as the expert ----(replace with Name and link to them as a source)--- pointed out, while temperatures may fluctuate, and are susceptible to "memory" (i.e. yesterday's rain may result in cooler surface temperatures than expected, even on a scorching day), they nonetheless operate consistently across space; the parts of the city that are the warmest today are still going to be the parts of the city that are warmest tomorrow. This consistency allows us to look at just a handful of the clearest days to get an accurate impression not of temperature, but of relative temperature - how the temperatures compare to each other.
 
+- XML data extraction
 - below 3% cloud coverage
 - validate/compare readings to ground temperture sensors
 - convert tif files into raster spatial items
 - crop & mask the raster files to NYC polygon extent/boundary
 - convert raster to SF spatial points
 - group by coordinates & summarize to get median value output
-- convert kelvin to farenheit
+- convert kelvin to farenheit, divide by 10
 - look at the distribution, relatively normal
 - compute z-score to get deviation from the median (relative temperature)
 - run KDE to make heatmap visual
@@ -45,6 +46,9 @@ L8 Data User's Handbook: https://prd-wret.s3-us-west-2.amazonaws.com/assets/pall
 
 Note on Cloud Coverage:
 According to the documentation, cloud coverage levels over 65% are considered cloudy. Days with high cloud coverage seem to present clearly inaccurate results; 9/8/14, for example, has a cloud coverage of 85% and shows Central Park as having an average temperature of -65 F. While Earth explorer allows users to filter based on cloud coverage (and if repeating this endeavor, I'd encourage you to download from the source while using this filter), because we already downloaded all dates, I will remove days with significant cloud coverage by pulling from the XML data, which constrains cloud cover information.
+
+Note on Temperatures:
+Temperatures are recorded by LANDSAT 8 in Kelvin*10. In order to make them readable to the general public, we added a Kelvin to Fahrenheit converter function, and divided all values by 10.
 
 
 ## Data Sources & Outputs
