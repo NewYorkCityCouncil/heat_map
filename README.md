@@ -65,30 +65,32 @@ Temperatures are recorded by LANDSAT 8 in Kelvin*10. In order to make them reada
 
 - code
  - 
-## Fixing & Updating below
-
-https://www.usgs.gov/landsat-missions/landsat-data-access#C2ARD
-
-2 ways to get analysis ready surface temperature product from USGS - through at no charge download using Earth Explorer or through an aws s3 requester pays bucket
-https://www.usgs.gov/landsat-missions/landsat-commercial-cloud-data-access
-
-citation: Landsat Level-2 Surface Temperature Science Product courtesy of the U.S. Geological Survey.
 
 ## Getting Data
 
 - US Landsat 4-8 ARD: [Provisional Surface Temperature (ST)](https://www.usgs.gov/landsat-missions/landsat-collection-2-surface-temperature)
-  1. Make an account at (https://earthexplorer.usgs.gov/)
-  2. Install [Bulk Download Application](https://earthexplorer.usgs.gov/bulk)
-  
-  ------- up to here ------
-  3. On Earth Exloper site search panel, select desired criteria:
-      - Date Range: 2014 to 2020
-      - Datasets: US Landsat 4-8 ARD
+
+https://www.usgs.gov/landsat-missions/landsat-data-access#C2ARD
+
+There are several ways to get analysis ready surface temperature data from USGS - through at no charge download using Earth Explorer, or using Machine-to-Machine (M2M) API or through an AWS S3 requester pays bucket.
+
+https://www.usgs.gov/landsat-missions/landsat-commercial-cloud-data-access
+
+
+  1. Create an account or login in to https://earthexplorer.usgs.gov/.
+      - Request access to the M2M API https://ers.cr.usgs.gov/profile/access.
+  3. On Earth Exloper site search panel or using the API parameters, select desired criteria:
+      - Date Range: 2018 to 2022
+      - Datasets: Landsat 4-9 C2 U.S. ARD (Analysis Ready Data)
+      - Cloud cover: Less than 10% (if using earth explorer) or less than 3% if using the API.
       - Tile grid horizontal: 29 (NYC)
       - Tile grid vertical: 7 (NYC)
         * search for tile grid [here](https://www.usgs.gov/media/images/conterminous-us-landsat-analysis-ready-data-ard-tiles)
-  4. Follow [BIG DATA Download](https://blogs.fu-berlin.de/reseda/landsat-big-data-download/#3) instructions from the blog site (blogs.fu-berlin.de) 
-     - Where the instructions say "Choose “Non-Limited Results” and “CSV” in order to export the metadata of every single file found to a csv-file (which is a text file)" choose "Comma (,) Delimited" format instead.
+        * you can also draw a polygon or circle to indicate or upload your desired geography.
+  4. If downloading many scenes use the Bulk Download options to help download all scenes at once.
+      - Click on the 'Show Result Controls', and select 'Add All results from Current Page to Bulk Download'
+      - Make sure to download not only the geo-tiff files, ex. LC08_CU_029007_20180710_20190614_C01_V01_ST.tif, but it's corresponding meta-data. You can export it on 'Click Here to Export Your Results' that is next to the Data Set section
+      - Pop up will show to incide desired export output format, choose "Comma (,) Delimited".
      
 - Ground Monitor Temperature:
   1. Select your local stations. (Central Park, LaGuardia, Kennedy)
@@ -100,3 +102,6 @@ citation: Landsat Level-2 Surface Temperature Science Product courtesy of the U.
 - Satellite Readings
   1. Cloud Cover: https://landsat.usgs.gov/landsat-8-cloud-cover-assessment-validation-data#Urban
   2. Comparing Ground Monitor temperatures to Satellite readings
+
+
+Citation: Landsat Level-2 Surface Temperature Science Product courtesy of the U.S. Geological Survey.
