@@ -6,7 +6,7 @@
 #' IF YOU DO NOT WANT TO INSTALL ANY OF THESE PACKAGES, DO NOT RUN THIS CODE.
 
 list.of.packages <- c("tidyverse", "janitor", "raster", "sf", "leaflet", "XML", "methods", "lubridate", 
-                      "rgdal", "ggplot2", "htmlwidgets")
+                      "rgdal", "ggplot2", "htmlwidgets", "exactextractr", "terra")
 
 options(scipen = 999)
 
@@ -43,18 +43,14 @@ unzip_sf <- function(zip_url) {
 k_to_f <- function(temp) { fahrenheight <- ((temp - 273) * (9/5)) + 32  }
 
 temp_func_2 <-function(rastername) {
-  rstr <- velox(rastername)
+  rstr <- terra::rast(rastername)
   sf <- st_transform(shapes, crs(rastername))
-  temps <- rstr$extract(sp=sf$geometry)
   mean_temp <- paste0('mean_temp')
   max_temp <- paste0('max_temp')
   min_temp <- paste0('min_temp')
-  sf[,mean_temp] <- sapply(temps, mean, na.rm = TRUE)
-  sf[,mean_temp] <- k_to_f(sf[,mean_temp]/10)
-  sf[,max_temp] <- sapply(temps, max)
-  sf[,max_temp] <- k_to_f(sf[,max_temp]/10)
-  sf[,min_temp] <- sapply(temps, min)
-  sf[,min_temp] <- k_to_f(sf[,min_temp]/10)
+  sf[,mean_temp] <- sapply(exact_extract(rstr, sf, 'mean')/10, k_to_f)
+  sf[,max_temp] <- sapply(exact_extract(rstr, sf, 'max')/10, k_to_f)
+  sf[,min_temp] <- sapply(exact_extract(rstr, sf, 'min')/10, k_to_f)
   sf
 }
 
