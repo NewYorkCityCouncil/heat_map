@@ -22,14 +22,13 @@
 #below 3% cloud coverage
 
 
-july_10_18_tif <- 'data/input/landsat_final_used_values/LC08_CU_029007_20180710_20190614_C01_V01_ST.tif'
+july_10_18_tif <- 'data/input/raw/landsat_final_used_values/LC08_CU_029007_20180710_20190614_C01_V01_ST.tif'
 #0.3% cloud coverage
-august_30_19_tif <- 'data/input/landsat_final_used_values/LC08_CU_029007_20190830_20190919_C01_V01_ST.tif'
-sept_22_19_tif <- 'data/input/landsat_final_used_values/LC08_CU_029007_20190922_20191001_C01_V01_ST.tif'
+august_30_19_tif <- 'data/input/raw/landsat_final_used_values/LC08_CU_029007_20190830_20190919_C01_V01_ST.tif'
+sept_22_19_tif <- 'data/input/raw/landsat_final_used_values/LC08_CU_029007_20190922_20191001_C01_V01_ST.tif'
 nyc <-st_read("https://data.cityofnewyork.us/api/geospatial/tqmj-j8zm?method=export&format=GeoJSON") %>%
   st_transform("+proj=longlat +datum=WGS84")
 
-# WARNING HERE: Cannot create a RasterLayer object from this file. (file does not exist)
 # Create data
 august_30_19_raster <- raster(august_30_19_tif)
 july_10_18_raster <- raster(july_10_18_tif)
@@ -40,7 +39,7 @@ sept_22_19_raster <- raster(sept_22_19_tif)
 #reproject nyc polygon to raster projection
 nyc1 <- st_transform(nyc, projection(august_30_19_raster))
 
-
+# ERROR HERE: 'Error in x$.self$finalize() : attempt to apply non-function'
 #crop & mask the raster files to poylgon extent/boundary
 august_30_19_masked <- mask(august_30_19_raster, nyc1)
 august_30_19_cropped <- crop(august_30_19_masked, nyc1)
