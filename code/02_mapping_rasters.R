@@ -19,6 +19,9 @@
 #' how the temperatures compare to each other.
 
 
+# Load dependencies to start if you haven't run 00_load_dependencies.R or 01_landsat_air_correlations.R yet
+source("code/00_load_dependencies.R")
+
 #below 3% cloud coverage
 
 
@@ -87,13 +90,12 @@ median_temp <- collected_sf %>%
   mutate(x = as.numeric(x),
          y = as.numeric(y))
 
-median_temp_sf <- st_as_sf(median_temp, coords = c("x", "y")) 
-
-median_temp_sf <- median_temp_sf %>% st_set_crs(crs(august_30_19_cropped)) %>% st_transform(4326)
+median_temp_sf <- st_as_sf(median_temp, coords = c("x", "y")) %>% 
+  st_set_crs(crs(august_30_19_cropped)) %>% st_transform(4326)
 
 # As seen below, distribution of points seems pretty normal, slight tail on the 
-# left, or possibly even an overlapping of two distributions, driven by var-
-# iables about which we don't have access to information.
+# left, or possibly even an overlapping of two distributions, driven by variables
+# about which we don't have access to information.
 ggplot(median_temp_sf, aes(x = median_temp)) +
   geom_histogram()
 
@@ -114,7 +116,7 @@ st_write(median_temp_sf, 'data/output/median_satellite_surface_temperatures.shp'
 
 # Heat Map ----------------------------------------------------------------
 
-
+### ERRORS HERE - some change in 'sp.kde'; must remove nr/nc options, replace median_temp_sp with median_temp_sf; error: gridsize too small
 #convert to spatial for sp.kde
 median_temp_sp <- as(median_temp_sf, "Spatial")
 
