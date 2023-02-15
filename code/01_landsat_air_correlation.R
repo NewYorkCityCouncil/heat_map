@@ -55,7 +55,7 @@ shapes <- rbind(lag_shape, cp_shape)
 # load in all raster files and apply the temp func to get mean, max and min temperatures
 # within the sf geometry
 
-filenames <- list.files("data/input/raw/landsat_final_used_values copy/", pattern="*.tif", full.names=TRUE)
+filenames <- list.files("data/input/raw/landsat_final_used_values/", pattern="*.tif", full.names=TRUE)
 ldf_r <- lapply(filenames, raster)
 res <- lapply(ldf_r, temp_func_2)
 

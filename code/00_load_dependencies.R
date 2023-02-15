@@ -39,7 +39,7 @@ unzip_sf <- function(zip_url) {
   return(your_SHP_file)
 }
 
-# Function to Convert Kelving to Fahrenheit
+# Function to Convert Kelvin to Fahrenheit
 k_to_f <- function(temp) { fahrenheight <- ((temp - 273) * (9/5)) + 32  }
 
 temp_func_2 <-function(rastername) {

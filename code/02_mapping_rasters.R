@@ -26,10 +26,9 @@ source("code/00_load_dependencies.R")
 
 
 july_10_18_tif <- 'data/input/raw/landsat_final_used_values/LC08_CU_029007_20180710_20190614_C01_V01_ST.tif'
-#0.3% cloud coverage
 august_30_19_tif <- 'data/input/raw/landsat_final_used_values/LC08_CU_029007_20190830_20190919_C01_V01_ST.tif'
 sept_22_19_tif <- 'data/input/raw/landsat_final_used_values/LC08_CU_029007_20190922_20191001_C01_V01_ST.tif'
-nyc <-st_read("https://data.cityofnewyork.us/api/geospatial/tqmj-j8zm?method=export&format=GeoJSON") %>%
+nyc <- st_read("https://data.cityofnewyork.us/api/geospatial/tqmj-j8zm?method=export&format=GeoJSON") %>%
   st_transform("+proj=longlat +datum=WGS84")
 
 # Create data
@@ -47,10 +46,10 @@ nyc1 <- st_transform(nyc, projection(august_30_19_raster))
 august_30_19_masked <- mask(august_30_19_raster, nyc1)
 august_30_19_cropped <- crop(august_30_19_masked, nyc1)
 
-july_10_18_masked <- mask(august_30_19_raster, nyc1)
+july_10_18_masked <- mask(july_10_18_raster, nyc1)
 july_10_18_cropped <- crop(july_10_18_masked, nyc1)
 
-sept_22_19_masked <- mask(august_30_19_raster, nyc1)
+sept_22_19_masked <- mask(sept_22_19_raster, nyc1)
 sept_22_19_cropped <- crop(sept_22_19_masked, nyc1)
 
 
@@ -70,7 +69,7 @@ sept_22_19_sf <- rasterToPoints(sept_22_19_cropped, spatial = TRUE) %>%
   mutate(date = mdy("09-22-2019"))
 
 
-# Converting Kelving to Fahrenheit
+# Converting Kelvin to Fahrenheit
 k_to_f <- function(temp) { fahrenheight <- ((temp - 273) * (9/5)) + 32  }
 
 
@@ -83,7 +82,7 @@ collected_sf <- rbind(august_30_19_sf, july_10_18_sf, sept_22_19_sf) %>%
 
 
 median_temp <- collected_sf %>% 
-  rename(temp = LC08_CU_029007_20190830_20190919_C01_V01_ST) %>% 
+  rename(temp = Band.1) %>% 
   group_by(coords) %>% 
   summarise(median_temp = k_to_f(median(temp)/10)) %>% 
   separate(coords, into = c("x", "y"), sep = ", ") %>% 
