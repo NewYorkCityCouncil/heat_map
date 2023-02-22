@@ -1,0 +1,68 @@
+fieldName,id,dictionaryLink
+Tile Identifier,60fae0a7826ca392,"https://www.usgs.gov/centers/eros/science/ard-landsat-tiles-data-dictionary
+#tile_identifier"
+Acquisition Date,60fae0a73afaafd1,"https://www.usgs.gov/centers/eros/science/ard-landsat-tiles-data-dictionary
+#acquisition_date"
+Tile Grid Region,60fae0a7b16c7697,"https://www.usgs.gov/centers/eros/science/ard-landsat-tiles-data-dictionary
+#tile_grid_region"
+Tile Grid Horizontal,60fae0a7c8a89a4d,"https://www.usgs.gov/centers/eros/science/ard-landsat-tiles-data-dictionary
+#tile_grid_horizontal"
+Tile Grid Vertical,60fae0a7a86061f5,"https://www.usgs.gov/centers/eros/science/ard-landsat-tiles-data-dictionary
+#tile_grid_vertical"
+Tile Production Date,60fae18fd609c535,"https://www.usgs.gov/centers/eros/science/ard-landsat-tiles-data-dictionary
+#tile_production_date"
+Cloud Cover,60fae18ff2b3cf29,"https://www.usgs.gov/centers/eros/science/ard-landsat-tiles-data-dictionary
+#cloud_cover"
+Cloud Shadow,60fae18fcf8e59bb,"https://www.usgs.gov/centers/eros/science/ard-landsat-tiles-data-dictionary
+#cloud_shadow"
+Snow Ice,60fae18f69efbbc7,"https://www.usgs.gov/centers/eros/science/ard-landsat-tiles-data-dictionary
+#Snow_ice"
+Fill (No Data),60faeeb36cdfa725,"https://www.usgs.gov/centers/eros/science/ard-landsat-tiles-data-dictionary
+#fill"
+Spacecraft Identifier,60faef2d4e37e262,"https://www.usgs.gov/centers/eros/science/ard-landsat-tiles-data-dictionary
+#spacecraft_identifier"
+Sensor Identifier,60faf9959ff46b1d,"https://www.usgs.gov/centers/eros/science/ard-landsat-tiles-data-dictionary
+#Sensor%20Identifier"
+Scene Count,60faf995283a2e2e,"https://www.usgs.gov/centers/eros/science/ard-landsat-tiles-data-dictionary
+#scene_count"
+Datum,60faf9951046cfab,"https://www.usgs.gov/centers/eros/science/ard-landsat-tiles-data-dictionary
+#datum"
+Map Projection,60faf9952d6d9067,"https://www.usgs.gov/centers/eros/science/ard-landsat-tiles-data-dictionary
+#map_projection"
+Collection Number,60faf995b80eb888,
+ARD Version,611b9d399257f82d,"https://www.usgs.gov/centers/eros/science/ard-landsat-tiles-data-dictionary
+#ard_version"
+Units,60faf99563b8dfa6,"https://www.usgs.gov/centers/eros/science/ard-landsat-tiles-data-dictionary
+#units"
+UL Corner Lat DMS,60fb0094e24a7620,"https://www.usgs.gov/centers/eros/science/ard-landsat-tiles-data-dictionary
+#coordinates_degrees"
+UL Corner Long DMS,60fb0094d22e0c6f,"https://www.usgs.gov/centers/eros/science/ard-landsat-tiles-data-dictionary
+#coordinates_degrees"
+UR Corner Lat DMS,60fb0095945ecd0a,"https://www.usgs.gov/centers/eros/science/ard-landsat-tiles-data-dictionary
+#coordinates_degrees"
+UR Corner Long DMS,60fb01e6a31e90bc,"https://www.usgs.gov/centers/eros/science/ard-landsat-tiles-data-dictionary
+#coordinates_degrees"
+LR Corner Lat DMS,60fb01e7d9de5ffc,"https://www.usgs.gov/centers/eros/science/ard-landsat-tiles-data-dictionary
+#coordinates_degrees"
+LR Corner Long DMS,60fb01e7d146fdb5,"https://www.usgs.gov/centers/eros/science/ard-landsat-tiles-data-dictionary
+#coordinates_degrees"
+LL Corner Lat DMS,60fb01e67c0e09a4,"https://www.usgs.gov/centers/eros/science/ard-landsat-tiles-data-dictionary
+#coordinates_degrees"
+LL Corner Long DMS,60fb01e75edb5444,"https://www.usgs.gov/centers/eros/science/ard-landsat-tiles-data-dictionary
+#coordinates_degrees"
+LR Corner Long,60fb073ac0e535f9,"https://www.usgs.gov/centers/eros/science/ard-landsat-tiles-data-dictionary
+#coordinates_decimal"
+LR Corner Lat,60fb073aa08f7e09,"https://www.usgs.gov/centers/eros/science/ard-landsat-tiles-data-dictionary
+#coordinates_decimal"
+LL Corner Long,60fb073af8d3e883,"https://www.usgs.gov/centers/eros/science/ard-landsat-tiles-data-dictionary
+#coordinates_decimal"
+LL Corner Lat,60fb0686284892d4,"https://www.usgs.gov/centers/eros/science/ard-landsat-tiles-data-dictionary
+#coordinates_decimal"
+UR Corner Long,60fb0686d8eeca80,"https://www.usgs.gov/centers/eros/science/ard-landsat-tiles-data-dictionary
+#coordinates_decimal"
+UR Corner Lat,60fb06869ce9302b,"https://www.usgs.gov/centers/eros/science/ard-landsat-tiles-data-dictionary
+#coordinates_decimal"
+UL Corner Lat,60fb02ba1f00ac08,"https://www.usgs.gov/centers/eros/science/ard-landsat-tiles-data-dictionary
+#coordinates_decimal"
+UL Corner Long,60fb06867e61d36f,"https://www.usgs.gov/centers/eros/science/ard-landsat-tiles-data-dictionary
+#coordinates_decimal"
