@@ -19,40 +19,175 @@
 #' how the temperatures compare to each other.
 
 
-# Load dependencies to start if you haven't run 00_load_dependencies.R or 01_landsat_air_correlations.R yet
+# Load dependencies to start
 source("code/00_load_dependencies.R")
 
-#below 3% cloud coverage
+# functions --------------------------------------------------------------------
+k_to_f <- function(temp) {return((temp - 273) * (9/5)) + 32}
 
+# solution from mpriem89 (https://github.com/rstudio/leaflet/issues/256#issuecomment-440290201)
+addLegend_decreasing <- function (map, position = c("topright", "bottomright", "bottomleft","topleft"),
+                                  pal, values, na.label = "NA", bins = 7, colors, 
+                                  opacity = 0.5, labels = NULL, labFormat = labelFormat(), 
+                                  title = NULL, className = "info legend", layerId = NULL, 
+                                  group = NULL, data = getMapData(map), decreasing = FALSE) {
+  
+  position <- match.arg(position)
+  type <- "unknown"
+  na.color <- NULL
+  extra <- NULL
+  if (!missing(pal)) {
+    if (!missing(colors)) 
+      stop("You must provide either 'pal' or 'colors' (not both)")
+    if (missing(title) && inherits(values, "formula")) 
+      title <- deparse(values[[2]])
+    values <- evalFormula(values, data)
+    type <- attr(pal, "colorType", exact = TRUE)
+    args <- attr(pal, "colorArgs", exact = TRUE)
+    na.color <- args$na.color
+    if (!is.null(na.color) && col2rgb(na.color, alpha = TRUE)[[4]] == 
+        0) {
+      na.color <- NULL
+    }
+    if (type != "numeric" && !missing(bins)) 
+      warning("'bins' is ignored because the palette type is not numeric")
+    if (type == "numeric") {
+      cuts <- if (length(bins) == 1) 
+        pretty(values, bins)
+      else bins   
+      if (length(bins) > 2) 
+        if (!all(abs(diff(bins, differences = 2)) <= 
+                 sqrt(.Machine$double.eps))) 
+          stop("The vector of breaks 'bins' must be equally spaced")
+      n <- length(cuts)
+      r <- range(values, na.rm = TRUE)
+      cuts <- cuts[cuts >= r[1] & cuts <= r[2]]
+      n <- length(cuts)
+      p <- (cuts - r[1])/(r[2] - r[1])
+      extra <- list(p_1 = p[1], p_n = p[n])
+      p <- c("", paste0(100 * p, "%"), "")
+      if (decreasing == TRUE){
+        colors <- pal(rev(c(r[1], cuts, r[2])))
+        labels <- rev(labFormat(type = "numeric", cuts))
+      }else{
+        colors <- pal(c(r[1], cuts, r[2]))
+        labels <- rev(labFormat(type = "numeric", cuts))
+      }
+      colors <- paste(colors, p, sep = " ", collapse = ", ")
+    }
+    else if (type == "bin") {
+      cuts <- args$bins
+      n <- length(cuts)
+      mids <- (cuts[-1] + cuts[-n])/2
+      if (decreasing == TRUE){
+        colors <- pal(rev(mids))
+        labels <- rev(labFormat(type = "bin", cuts))
+      }else{
+        colors <- pal(mids)
+        labels <- labFormat(type = "bin", cuts)
+      }
+    }
+    else if (type == "quantile") {
+      p <- args$probs
+      n <- length(p)
+      cuts <- quantile(values, probs = p, na.rm = TRUE)
+      mids <- quantile(values, probs = (p[-1] + p[-n])/2, na.rm = TRUE)
+      if (decreasing == TRUE){
+        colors <- pal(rev(mids))
+        labels <- rev(labFormat(type = "quantile", cuts, p))
+      }else{
+        colors <- pal(mids)
+        labels <- labFormat(type = "quantile", cuts, p)
+      }
+    }
+    else if (type == "factor") {
+      v <- sort(unique(na.omit(values)))
+      colors <- pal(v)
+      labels <- labFormat(type = "factor", v)
+      if (decreasing == TRUE){
+        colors <- pal(rev(v))
+        labels <- rev(labFormat(type = "factor", v))
+      }else{
+        colors <- pal(v)
+        labels <- labFormat(type = "factor", v)
+      }
+    }
+    else stop("Palette function not supported")
+    if (!any(is.na(values))) 
+      na.color <- NULL
+  }
+  else {
+    if (length(colors) != length(labels)) 
+      stop("'colors' and 'labels' must be of the same length")
+  }
+  legend <- list(colors = I(unname(colors)), labels = I(unname(labels)), 
+                 na_color = na.color, na_label = na.label, opacity = opacity, 
+                 position = position, type = type, title = title, extra = extra, 
+                 layerId = layerId, className = className, group = group)
+  invokeMethod(map, data, "addLegend", legend)
+}
 
-july_10_18_tif <- 'data/input/raw/landsat_final_used_values/LC08_CU_029007_20180710_20190614_C01_V01_ST.tif'
-august_30_19_tif <- 'data/input/raw/landsat_final_used_values/LC08_CU_029007_20190830_20190919_C01_V01_ST.tif'
-sept_22_19_tif <- 'data/input/raw/landsat_final_used_values/LC08_CU_029007_20190922_20191001_C01_V01_ST.tif'
-nyc <- st_read("https://data.cityofnewyork.us/api/geospatial/tqmj-j8zm?method=export&format=GeoJSON") %>%
+################################################################################
+# load data
+################################################################################
+
+nyc = st_read("https://data.cityofnewyork.us/api/geospatial/tqmj-j8zm?method=export&format=GeoJSON") %>%
   st_transform("+proj=longlat +datum=WGS84")
 
-# Create data
-august_30_19_raster <- raster(august_30_19_tif)
-july_10_18_raster <- raster(july_10_18_tif)
-sept_22_19_raster <- raster(sept_22_19_tif)
+median_temp = raster('data/input/surfacetemperature_median_2014_2022.tiff')
 
 
+################################################################################
+# prep temp raster 
+################################################################################
 
-#reproject nyc polygon to raster projection
-nyc1 <- st_transform(nyc, projection(august_30_19_raster))
+nyc = st_transform(nyc, projection(median_temp))
 
-# ERROR HERE: 'Error in x$.self$finalize() : attempt to apply non-function'
-#crop & mask the raster files to poylgon extent/boundary
-august_30_19_masked <- mask(august_30_19_raster, nyc1)
-august_30_19_cropped <- crop(august_30_19_masked, nyc1)
+median_temp = median_temp %>% crop(nyc) %>% mask(nyc)
+median_temp = median_temp*0.00341802 + 149 #the scale and offset parameters on GEE
+median_temp = k_to_f(median_temp)
 
-july_10_18_masked <- mask(july_10_18_raster, nyc1)
-july_10_18_cropped <- crop(july_10_18_masked, nyc1)
-
-sept_22_19_masked <- mask(sept_22_19_raster, nyc1)
-sept_22_19_cropped <- crop(sept_22_19_masked, nyc1)
+deviation = median_temp - mean(values(median_temp), na.rm=T)
+z_score = scale(median_temp)
 
 
+################################################################################
+# create plot 
+################################################################################
+
+# capping the outliers ---------------------------------------------------------
+# since leaflet coloring is linear, this lets us use the larger range
+
+values(deviation) = ifelse(values(deviation) <= -8, -8, values(deviation))
+values(deviation) = ifelse(values(deviation) >= 8, 8, values(deviation))
+
+
+# mapping 
+
+heat_pal = colorNumeric(colorRamps::matlab.like(15), 
+                        domain = c(values(deviation), 
+                                   # extend domain past so border values aren't NA
+                                   min(values(deviation), na.rm=T)-0.1, 
+                                   max(values(deviation), na.rm=T)+0.1),
+                        na.color = "transparent")
+
+map = leaflet(options = leafletOptions(zoomControl = FALSE, 
+                                       minZoom = 10, 
+                                       maxZoom = 16)) %>%
+  addProviderTiles('CartoDB.Positron', 
+                   options = providerTileOptions(minZoom = 10, maxZoom = 14)) %>%
+  addRasterImage(deviation, colors = heat_pal, opacity = 0.3) %>% 
+  addLegend_decreasing(position = "topleft", 
+            pal = heat_pal, 
+            values = values(deviation), 
+            title = paste0("Temperature Deviation", "<br>", "from Mean"),  
+            labFormat = labelFormat(prefix = "  "), decreasing = T)
+
+
+withr::with_dir('visuals', saveWidget(map, file="summer_heat_deviation_raster.html"))
+
+
+# original ---------------------------------------------------------------------
 
 # Convert raster to Sf
 august_30_19_sf <- rasterToPoints(august_30_19_cropped, spatial = TRUE) %>%
@@ -68,17 +203,10 @@ sept_22_19_sf <- rasterToPoints(sept_22_19_cropped, spatial = TRUE) %>%
   as_tibble() %>% 
   mutate(date = mdy("09-22-2019"))
 
-
-# Converting Kelvin to Fahrenheit
-k_to_f <- function(temp) { fahrenheight <- ((temp - 273) * (9/5)) + 32  }
-
-
-
 # Merge sfs
 
 collected_sf <- rbind(august_30_19_sf, july_10_18_sf, sept_22_19_sf) %>% 
   mutate(coords = paste0(as.character(x),", ", as.character(y)))
-
 
 
 median_temp <- collected_sf %>% 
@@ -143,9 +271,7 @@ kde_heat_crop <- crop(kde_heat_masked, nyc1)
 writeRaster(kde_heat_crop, filename="data/output/kde_heatmap_cropped.tif", format = "GTiff", overwrite=TRUE)
 
 
-
 # QUICK ACCESS ------------------------------------------------------------
-
 
 kde_heat <- raster("data/output/kde_heatmap.tif")
 kde_heat_crop <- raster("data/output/kde_heatmap_cropped.tif")
