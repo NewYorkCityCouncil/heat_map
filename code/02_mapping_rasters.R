@@ -146,9 +146,15 @@ nyc = st_transform(nyc, projection(median_temp))
 median_temp = median_temp %>% crop(nyc) %>% mask(nyc)
 median_temp = median_temp*0.00341802 + 149 #the scale and offset parameters on GEE
 median_temp = k_to_f(median_temp)
+writeRaster(median_temp, "data/output/f_median_temp", 
+            format = "GTiff", overwrite = T)
 
 deviation = median_temp - mean(values(median_temp), na.rm=T)
 z_score = scale(median_temp)
+
+# save out the deviation
+writeRaster(deviation, "data/output/f_deviation", 
+            format = "GTiff", overwrite = T)
 
 
 ################################################################################
@@ -158,17 +164,18 @@ z_score = scale(median_temp)
 # capping the outliers ---------------------------------------------------------
 # since leaflet coloring is linear, this lets us use the larger range
 
-values(deviation) = ifelse(values(deviation) <= -8, -8, values(deviation))
-values(deviation) = ifelse(values(deviation) >= 8, 8, values(deviation))
+deviation_plot = deviation
+values(deviation_plot) = ifelse(values(deviation_plot) <= -8, -8, values(deviation_plot))
+values(deviation_plot) = ifelse(values(deviation_plot) >= 8, 8, values(deviation_plot))
 
 
 # mapping 
 
 heat_pal = colorNumeric(colorRamps::matlab.like(15), 
-                        domain = c(values(deviation), 
+                        domain = c(values(deviation_plot), 
                                    # extend domain past so border values aren't NA
-                                   min(values(deviation), na.rm=T)-0.1, 
-                                   max(values(deviation), na.rm=T)+0.1),
+                                   min(values(deviation_plot), na.rm=T)-0.1, 
+                                   max(values(deviation_plot), na.rm=T)+0.1),
                         na.color = "transparent")
 
 map = leaflet(options = leafletOptions(zoomControl = FALSE, 
@@ -176,10 +183,10 @@ map = leaflet(options = leafletOptions(zoomControl = FALSE,
                                        maxZoom = 16)) %>%
   addProviderTiles('CartoDB.Positron', 
                    options = providerTileOptions(minZoom = 10, maxZoom = 14)) %>%
-  addRasterImage(deviation, colors = heat_pal, opacity = 0.3) %>% 
+  addRasterImage(deviation_plot, colors = heat_pal, opacity = 0.4) %>% 
   addLegend_decreasing(position = "topleft", 
             pal = heat_pal, 
-            values = values(deviation), 
+            values = values(deviation_plot), 
             title = paste0("Temperature Deviation", "<br>", "from Mean"),  
             labFormat = labelFormat(prefix = "  "), decreasing = T)
 
@@ -187,95 +194,27 @@ map = leaflet(options = leafletOptions(zoomControl = FALSE,
 withr::with_dir('visuals', saveWidget(map, file="summer_heat_deviation_raster.html"))
 
 
-# original ---------------------------------------------------------------------
+################################################################################
+# smoothed plot
+################################################################################
 
-# Convert raster to Sf
-august_30_19_sf <- rasterToPoints(august_30_19_cropped, spatial = TRUE) %>%
-  as_tibble() %>% 
-  mutate(date = mdy("08-30-2019"))
+deviation_smooth = focal(deviation, w=matrix(rep(1, 17^2), nrow=17), 
+                         fun="mean", na.rm=T) %>% mask(nyc)
 
+values(deviation_smooth) = ifelse(values(deviation_smooth) <= -8, -8, values(deviation_smooth))
+values(deviation_smooth) = ifelse(values(deviation_smooth) >= 8, 8, values(deviation_smooth))
 
-july_10_18_sf <- rasterToPoints(july_10_18_cropped, spatial = TRUE) %>%
-  as_tibble() %>% 
-  mutate(date = mdy("07-10-2018"))
-
-sept_22_19_sf <- rasterToPoints(sept_22_19_cropped, spatial = TRUE) %>%
-  as_tibble() %>% 
-  mutate(date = mdy("09-22-2019"))
-
-# Merge sfs
-
-collected_sf <- rbind(august_30_19_sf, july_10_18_sf, sept_22_19_sf) %>% 
-  mutate(coords = paste0(as.character(x),", ", as.character(y)))
-
-
-median_temp <- collected_sf %>% 
-  rename(temp = Band.1) %>% 
-  group_by(coords) %>% 
-  summarise(median_temp = k_to_f(median(temp)/10)) %>% 
-  separate(coords, into = c("x", "y"), sep = ", ") %>% 
-  mutate(x = as.numeric(x),
-         y = as.numeric(y))
-
-median_temp_sf <- st_as_sf(median_temp, coords = c("x", "y")) %>% 
-  st_set_crs(crs(august_30_19_cropped)) %>% st_transform(4326)
-
-# As seen below, distribution of points seems pretty normal, slight tail on the 
-# left, or possibly even an overlapping of two distributions, driven by variables
-# about which we don't have access to information.
-ggplot(median_temp_sf, aes(x = median_temp)) +
-  geom_histogram()
+map = leaflet(options = leafletOptions(zoomControl = FALSE, 
+                                       minZoom = 10, 
+                                       maxZoom = 16)) %>%
+  addProviderTiles('CartoDB.Positron', 
+                   options = providerTileOptions(minZoom = 10, maxZoom = 14)) %>%
+  addRasterImage(deviation_smooth, colors = heat_pal, opacity = 0.4) %>% 
+  addLegend_decreasing(position = "topleft", 
+                       pal = heat_pal, 
+                       values = values(deviation_plot), 
+                       title = paste0("Temperature Deviation", "<br>", "from Mean"),  
+                       labFormat = labelFormat(prefix = "  "), decreasing = T)
 
 
-
-# Z-Scores
-#' because distribution is relatively normal, we're electing to go with z-score
-#' calculation, so as to represent the distribution accurately without relying
-#' on Fahrenheit values
-
-# (value - mean)/stdev
-
-median_temp_sf$zscore <- scale(median_temp_sf$median_temp)
-
-# export median temp shapefile
-st_write(median_temp_sf, 'data/output/median_satellite_surface_temperatures.shp')
-
-
-# Heat Map ----------------------------------------------------------------
-
-### ERRORS HERE - some change in 'sp.kde'; must remove nr/nc options, replace median_temp_sp with median_temp_sf; error: gridsize too small
-#convert to spatial for sp.kde
-median_temp_sp <- as(median_temp_sf, "Spatial")
-
-
-# Use kernel density estimate (kde) to create heatmap of city; using higher
-# row/column values for a resolution that better fits the scale of the data.
-kde_heat <- sp.kde(x = median_temp_sp, y = median_temp_sp$zscore,  
-        nr = 600, nc = 600, standardize = TRUE)
-plot(kde_heat)
-
-#write output
-writeRaster(kde_heat, filename="data/output/kde_heatmap.tif", format = "GTiff", overwrite=TRUE)
-
-# crop this new raster to nyc
-nyc1 <- st_transform(nyc, projection(kde_heat))
-
-write_sf(nyc1, "data/output/nyc_custom_shapefile.shp")
-
-
-#crop & mask the raster files to poylgon extent/boundary
-kde_heat_masked <- mask(kde_heat, nyc1)
-kde_heat_crop <- crop(kde_heat_masked, nyc1)
-
-#write nyc-cropped output
-writeRaster(kde_heat_crop, filename="data/output/kde_heatmap_cropped.tif", format = "GTiff", overwrite=TRUE)
-
-
-# QUICK ACCESS ------------------------------------------------------------
-
-kde_heat <- raster("data/output/kde_heatmap.tif")
-kde_heat_crop <- raster("data/output/kde_heatmap_cropped.tif")
-median_temp_sf <- read_sf("data/output/median_satellite_surface_temperatures.shp")
-median_temp_sp <- as(median_temp_sf, "Spatial")
-nyc1 <-read_sf("data/output/nyc_custom_shapefile/nyc_custom_shapefile.shp") %>%
-  st_transform("+proj=longlat +datum=WGS84")
+withr::with_dir('visuals', saveWidget(map, file="summer_heat_smoothed_deviation_raster.html"))
