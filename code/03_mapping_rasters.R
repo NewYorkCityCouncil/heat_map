@@ -1,24 +1,3 @@
-# Notes -------------------------------------------------------------------
-
-#' After discussion with a NASA-affiliated expert, we've determined that 
-#' actually presenting the true surface temperature, regardless of whether it's
-#' measured in Kelvin, Celsius or Fahrenheit, will not be very informative for
-#' us or end users; what does it mean if the surface temperature is 95 degrees F
-#' on a summer day? Is that hold or cold? Additionally, relying on exact temper-
-#' atures increases the likelihood of inaccuracy due to the susceptibility of
-#' the data to cloud coverage and other factors that obscure satelite access to
-#' the ground.
-#' 
-#' However, as the expert pointed out, while temperatures may fluctuate, and 
-#' are susceptible to "memory" (i.e. yesterday's rain may result in cooler sur-
-#' face temperatures than expected, even on a scorching day), they nonetheless
-#' operate consistently across space; the parts of the city that are the warmest
-#' today are still going to be the parts of the city that are warmest tomorrow.
-#' This consistency allows us to look at just a handful of the clearest days to
-#' get an accurate impression not of temperature, but of relative temperature - 
-#' how the temperatures compare to each other.
-
-
 # Load dependencies to start
 source("code/00_load_dependencies.R")
 

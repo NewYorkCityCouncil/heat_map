@@ -3,13 +3,14 @@
 ### Mapping Heat Inequality in NYC
 
 With more New Yorkers staying home this summer, extreme heat and unequal access to cool green spaces may become a more serious issue than ever before.
+
 Using satellite data from the US Geological Survey’s Landsat 8 satellite, the New York City Council’s Data Team put together a map of how temperature varies across the city.
 
-The result is clear: some parts of the city are hotter during the summer months than others, particularly in south/southeast Brooklyn and southeast Queens.
+The result is clear: some parts of the city are hotter during the summer months than others, particularly in south/southeast Brooklyn and southeast Queens. 
 
 ## Quick Links 
 
-#### - Download NYC Summer 2018-2022 surface temperature data. (add link)
+#### - [Download NYC Summer 2018-2022 surface temperature data.](code/01_gee_get_mean_temp.js)
 
 #### - Learn how to download surface temperature data from the USGS. (add link)
 
@@ -18,9 +19,32 @@ The result is clear: some parts of the city are hotter during the summer months 
 #### - FAQ (add link or section)
 
 
-## Methodology
+## Background
 
 After discussion with a NASA-affiliated expert, we've determined that actually presenting the true surface temperature, regardless of whether it's measured in Kelvin, Celsius or Fahrenheit, will not be very informative for us or end users; what does it mean if the surface temperature is 95 degrees F on a summer day? Is that hold or cold? Additionally, relying on exact temperatures increases the likelihood of inaccuracy due to the susceptibility of the data to cloud coverage and other factors that obscure satelite access to the ground. However, as the expert ----(replace with Name and link to them as a source)--- pointed out, while temperatures may fluctuate, and are susceptible to "memory" (i.e. yesterday's rain may result in cooler surface temperatures than expected, even on a scorching day), they nonetheless operate consistently across space; the parts of the city that are the warmest today are still going to be the parts of the city that are warmest tomorrow. This consistency allows us to look at just a handful of the clearest days to get an accurate impression not of temperature, but of relative temperature - how the temperatures compare to each other.
+
+
+## Data 
+
+
+
+## Implementation
+
+### [Download temperature rasters over the city using Google Earth Engine](code/01_gee_get_mean_temp.js)
+
+This script is meant to be run in [Google Earth Engine](https://code.earthengine.google.com/), which is free to access but does require you to fill out a brief form explaining your main use cases.  
+
+Pulls in all Landsat 8 imagery (Collection 2, Tier 1) covering the NYC area and filters for images: 
+* from 2014 onwards
+* falling from June to September in any year
+* with <= 40% cloud cover 
+
+For this collection of images, the images are each "masked" to remove any part of the image with a cloud or a cloud shadow and clips to the boundaries of NYC, including removing any water area. The collection of images is then collapsed by taking the mean - for each pixel over NYC we take the mean at that pixel over all images. There are 107 images in the collection after all filters. 
+
+The script provided then exports the final raster of mean temperatures at each pixel to Google Drive. To get this data you can paste the script provided into the web based code editor and hit "Run" above your code. After it is processed, you can hit the "Run" in the console to export the image to your Google Drive. This image can then be download for any local computation or plotting. 
+
+
+### [Check satellite measures against ground monitors](code/01_landsat_air_correlation.R)
 
 - XML data extraction
 - below 3% cloud coverage

@@ -25,7 +25,6 @@ function prepSrL8(image) {
   // Develop masks for unwanted pixels (fill, cloud, cloud shadow).
   var qaMask = image.select('QA_PIXEL').bitwiseAnd(parseInt('11111', 2)).eq(0);
   var saturationMask = image.select('QA_RADSAT').eq(0);
-
  
   // Replace original bands with scaled bands and apply masks.
   return image.updateMask(qaMask).updateMask(saturationMask);

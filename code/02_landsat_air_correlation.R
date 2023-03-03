@@ -8,22 +8,28 @@ source("code/00_load_dependencies.R")
 # Load temperature data for Central Park and LaGuardia
 
 # Central Park
-cp_raw <- read_csv("data/input/raw/Ground_Monitor_Temps_NYC/central_park_temp.csv") %>% 
+cp_temp <- read_csv("data/input/raw/Ground_Monitor_Temps_NYC/central_park_temp.csv") %>% 
   janitor::clean_names() %>% 
   dplyr::select(station, date, hourly_dry_bulb_temperature) %>% 
-  mutate(name = "Central Park")
+  mutate(name = "Central Park") %>% 
+  filter(!is.na(date),
+         !is.na(hourly_dry_bulb_temperature), 
+         months(date) %in% month.name[6:9]) %>%
+  mutate(date = date(date)) %>%
+  group_by(date) %>%
+  summarise(temp = mean(hourly_dry_bulb_temperature), n = n()) %>%
+  ungroup() %>%
+  summarise(temp = mean(temp))
 
-cp_raw <- cp_raw %>% 
-  filter(!is.na(date))
+cp_point = st_point(x = c(-73.96925, 40.77898))
 
 # LaGuardia
 lag_raw <- read_csv("data/input/raw/Ground_Monitor_Temps_NYC/laguardia_temp.csv") %>% 
   janitor::clean_names() %>% 
   dplyr::select(station, date, hourly_dry_bulb_temperature) %>% 
-  mutate(name = "La Guardia Airport")
+  mutate(name = "La Guardia Airport") %>% 
+  filter(!is.na(date) & !is.na(hourly_dry_bulb_temperature))
 
-lag_raw <- lag_raw %>% 
-  filter(!is.na(date))
 
 
 
