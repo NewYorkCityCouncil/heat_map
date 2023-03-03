@@ -41,8 +41,8 @@ The ground monitor temps are sourced from [NOAA](https://www.ncdc.noaa.gov/cdo-w
 
 Additional data sources are used but the data is pulled straight from the source. This includes: 
 
-* park polygons (https://data.cityofnewyork.us/City-Government/Airport-Polygon/xfhz-rhsk)
-* airport polygons (https://data.cityofnewyork.us/City-Government/Airport-Polygon/xfhz-rhsk)
+* [park polygons](https://data.cityofnewyork.us/City-Government/Airport-Polygon/xfhz-rhsk)
+* [airport polygons](https://data.cityofnewyork.us/City-Government/Airport-Polygon/xfhz-rhsk)
 
 ## Implementation
 
@@ -55,7 +55,7 @@ Pulls in all Landsat 8 imagery (Collection 2, Tier 1) covering the NYC area and 
 * falling from June to September in any year
 * with <= 40% cloud cover 
 
-For this collection of images, the images are each "masked" to remove any part of the image with a cloud or a cloud shadow and clips to the boundaries of NYC, including removing any water area. The collection of images is then collapsed by taking the mean - for each pixel over NYC we take the mean at that pixel over all images. There are 107 images in the collection after all filters. 
+For this collection of images, the images are each "masked" to remove any part of the image with a cloud or a cloud shadow and clips to the boundaries of NYC, including removing any water area. The collection of images is then collapsed by taking the mean - for each pixel over NYC we take the mean at that pixel over all images. There are 107 images in the collection after all filters. (An additional 80 can be gained by removing the cloud filter).
 
 The script provided then exports the final raster of mean temperatures at each pixel to Google Drive. To get this data you can paste the script provided into the web based code editor and hit "Run" above your code. After it is processed, you can hit the "Run" in the console to export the image to your Google Drive. This image can then be download for any local computation or plotting. 
 
