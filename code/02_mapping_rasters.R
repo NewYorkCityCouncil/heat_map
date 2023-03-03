@@ -171,7 +171,8 @@ values(deviation_plot) = ifelse(values(deviation_plot) >= 8, 8, values(deviation
 
 # mapping 
 
-heat_pal = colorNumeric(colorRamps::matlab.like(15), 
+#colorRamps::matlab.like(15), 
+heat_pal = colorNumeric(rev(brewer.pal(11, "RdYlBu")), 
                         domain = c(values(deviation_plot), 
                                    # extend domain past so border values aren't NA
                                    min(values(deviation_plot), na.rm=T)-0.1, 
@@ -198,7 +199,7 @@ withr::with_dir('visuals', saveWidget(map, file="summer_heat_deviation_raster.ht
 # smoothed plot
 ################################################################################
 
-deviation_smooth = focal(deviation, w=matrix(rep(1, 17^2), nrow=17), 
+deviation_smooth = focal(deviation, w=matrix(rep(1, 47^2), nrow=47), 
                          fun="mean", na.rm=T) %>% mask(nyc)
 
 values(deviation_smooth) = ifelse(values(deviation_smooth) <= -8, -8, values(deviation_smooth))
