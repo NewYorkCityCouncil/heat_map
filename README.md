@@ -3,105 +3,73 @@
 ### Mapping Heat Inequality in NYC
 
 With more New Yorkers staying home this summer, extreme heat and unequal access to cool green spaces may become a more serious issue than ever before.
+
 Using satellite data from the US Geological Survey’s Landsat 8 satellite, the New York City Council’s Data Team put together a map of how temperature varies across the city.
 
-The result is clear: some parts of the city are hotter during the summer months than others, particularly in south/southeast Brooklyn and southeast Queens.
+The result is clear: some parts of the city are hotter during the summer months than others, particularly in south/southeast Brooklyn and southeast Queens. 
 
 ## Quick Links 
 
-#### - Download NYC Summer 2018-2022 surface temperature data. (add link)
+#### - [Download our NYC Summer 2014-2022 surface temperature data.](data/input/surfacetemperature_mean_2014_2022.tiff)
 
-#### - Learn how to download surface temperature data from the USGS. (add link)
+#### - [Download surface temperature data from the USGS.](code/01_gee_get_mean_temp.js)
 
-#### - Download the NYC heat map. (add link)
-
-#### - FAQ (add link or section)
+#### - [Download the html NYC heat map.](visuals/summer_heat_smoothed_deviation_raster.html)
 
 
-## Methodology
+## Background
 
 After discussion with a NASA-affiliated expert, we've determined that actually presenting the true surface temperature, regardless of whether it's measured in Kelvin, Celsius or Fahrenheit, will not be very informative for us or end users; what does it mean if the surface temperature is 95 degrees F on a summer day? Is that hold or cold? Additionally, relying on exact temperatures increases the likelihood of inaccuracy due to the susceptibility of the data to cloud coverage and other factors that obscure satelite access to the ground. However, as the expert ----(replace with Name and link to them as a source)--- pointed out, while temperatures may fluctuate, and are susceptible to "memory" (i.e. yesterday's rain may result in cooler surface temperatures than expected, even on a scorching day), they nonetheless operate consistently across space; the parts of the city that are the warmest today are still going to be the parts of the city that are warmest tomorrow. This consistency allows us to look at just a handful of the clearest days to get an accurate impression not of temperature, but of relative temperature - how the temperatures compare to each other.
 
-- XML data extraction
-- below 3% cloud coverage
-- validate/compare readings to ground temperture sensors
-- convert tif files into raster spatial items
-- crop & mask the raster files to NYC polygon extent/boundary
-- convert raster to SF spatial points
-- group by coordinates & summarize to get median value output
-- convert kelvin to farenheit, divide by 10
-- look at the distribution, relatively normal
-- compute z-score to get deviation from the median (relative temperature)
-- run KDE to make heatmap visual
+
+## Data 
+
+The data structure required to reproduce this code is as follows. These files are all provided in the repo, though some of them are not raw data directly downloaded from the source - both of the files outside the raw folder are generated through the `01_gee_get_mean_temp.js` file using the process described in the implementation section. 
+
+The ground monitor temps are sourced from [NOAA](https://www.ncdc.noaa.gov/cdo-web/datatools/lcd).
+
+```
+ └── input
+  	 ├── surfacetemperature_mean_2014_2022.tiff
+  	 ├── surfacetemperature_median_2014_2022.tiff
+  	 └──  raw
+  	      └── Ground_Monitor_Temps_NYC
+              ├── central_park_temp.csv 
+              ├── jfk_temp.csv
+              └── laguardia_temp.csv
+```
+
+Additional data sources are used but the data is pulled straight from the source. This includes: 
+
+* [park polygons](https://data.cityofnewyork.us/City-Government/Airport-Polygon/xfhz-rhsk)
+* [airport polygons](https://data.cityofnewyork.us/City-Government/Airport-Polygon/xfhz-rhsk)
+
+## Implementation
+
+### [Download temperature rasters over the city using Google Earth Engine](code/01_gee_get_mean_temp.js)
+
+This script is meant to be run in [Google Earth Engine](https://code.earthengine.google.com/), which is free to access but does require you to fill out a brief form explaining your main use cases.  
+
+Pulls in all Landsat 8 imagery (Collection 2, Tier 1) covering the NYC area and filters for images: 
+* from 2014 onwards
+* falling from June to September in any year
+* with <= 40% cloud cover 
+
+For this collection of images, the images are each "masked" to remove any part of the image with a cloud or a cloud shadow and clips to the boundaries of NYC, including removing any water area. The collection of images is then collapsed by taking the mean - for each pixel over NYC we take the mean at that pixel over all images. There are 107 images in the collection after all filters. (An additional 80 can be gained by removing the cloud filter).
+
+The script provided then exports the final raster of mean temperatures at each pixel to Google Drive. To get this data you can paste the script provided into the web based code editor and hit "Run" above your code. After it is processed, you can hit the "Run" in the console to export the image to your Google Drive. This image can then be download for any local computation or plotting. 
 
 
-## Notes About the Data
+### [Check satellite measures against ground monitors](code/01_landsat_air_correlation.R)
 
-Surface Temp data is sourced through LANDSAT 8, provided by USGS Earth Explorer. The satellite orbits the earth vertically, across the poles. It captures roughly  112 miles (~180 km) wide swaths of the earth at a time, and circumnavigates the globe every 99 minutes. This also means that it will pass over the same longitude at the same time, +/- 15 minutes. This makes time comparison quite easy. To ensure no gaps in data, LANDSAT 8 paths overlap slightly. New York City conveniently falls in the intersection of two paths - columns 13 and 14 of row 32. This means we get twice as many measurements. A third path, probably column 15, also picks up as New York City on the Earth Explorer site, but actually contains no (or nearly no) NYC geometry. Accordingly, every third will return NA, as it contains no values within the geometry we are examining.
-
-https://earthexplorer.usgs.gov/
-Acquisition Visualization: https://landsat.usgs.gov/landsat_acq
-NYC Coordinates: 40.7128° N, 74.0060° W
-L8 Data User's Handbook: https://prd-wret.s3-us-west-2.amazonaws.com/assets/palladium/production/atoms/files/LSDS-1574_L8_Data_Users_Handbook-v5.0.pdf
-
-Note on Cloud Coverage:
-According to the documentation, cloud coverage levels over 65% are considered cloudy. Days with high cloud coverage seem to present clearly inaccurate results; 9/8/14, for example, has a cloud coverage of 85% and shows Central Park as having an average temperature of -65 F. While Earth explorer allows users to filter based on cloud coverage (and if repeating this endeavor, I'd encourage you to download from the source while using this filter), because we already downloaded all dates, I will remove days with significant cloud coverage by pulling from the XML data, which constrains cloud cover information.
-
-Note on Temperatures:
-Temperatures are recorded by LANDSAT 8 in Kelvin*10. In order to make them readable to the general public, we added a Kelvin to Fahrenheit converter function, and divided all values by 10.
+### [Mapping the raster data](code/03_mapping_rasters.R)
 
 
-## Data Sources & Outputs
+## Additional notes + resources about the data
 
-- data
-  - input
-    - Parks Properties (https://data.cityofnewyork.us/City-Government/Parks-Properties/k2ya-ucmv)
-    - Airport Polygon (https://data.cityofnewyork.us/City-Government/Airport-Polygon/xfhz-rhsk)
-    - landsat_st (from Landsat folder on G drive) (update to repo)
-    - Ground_Monitor_Temps_NYC (from Landsat folder on G drive) (update to repo)
-  - outputs
+Surface Temp data is sourced through LANDSAT 8, provided by USGS, and sourced from Google Earth Engine. The satellite orbits the earth vertically, across the poles. It captures roughly  112 miles (~180 km) wide swaths of the earth at a time, and circumnavigates the globe every 99 minutes. This also means that it will pass over the same longitude at the same time, +/- 15 minutes. 
 
-## Code
+[Visualise Landsat imagery through the USGS website](https://earthexplorer.usgs.gov/)
+[Landsat 8 Data User's Handbook](https://prd-wret.s3-us-west-2.amazonaws.com/assets/palladium/production/atoms/files/LSDS-1574_L8_Data_Users_Handbook-v5.0.pdf)
+[Google Earth Engine Data Dictionary](https://developers.google.com/earth-engine/datasets/catalog/LANDSAT_LC08_C02_T1_L2): Important to note the scale and offset parameters included here or else the numbers are nonsensical. To get the temperature in Kelvin you must multiply by 0.00341802 then subtract 149. To get temperatures in Farenheight you can pass through the following formula: F = (K − 273.15) × 9/5 + 32.
 
-- code
- - 
-
-## Getting Data
-
-- US Landsat 4-8 ARD: [Provisional Surface Temperature (ST)](https://www.usgs.gov/landsat-missions/landsat-collection-2-surface-temperature)
-
-https://www.usgs.gov/landsat-missions/landsat-data-access#C2ARD
-
-There are several ways to get analysis ready surface temperature data from USGS - through at no charge download using Earth Explorer, or using Machine-to-Machine (M2M) API or through an AWS S3 requester pays bucket.
-
-https://www.usgs.gov/landsat-missions/landsat-commercial-cloud-data-access
-
-
-  1. Create an account or login in to https://earthexplorer.usgs.gov/.
-      - Request access to the M2M API https://ers.cr.usgs.gov/profile/access.
-  3. On Earth Exloper site search panel or using the API parameters, select desired criteria:
-      - Date Range: 2018 to 2022
-      - Datasets: Landsat 4-9 C2 U.S. ARD (Analysis Ready Data)
-      - Cloud cover: Less than 10% (if using earth explorer) or less than 3% if using the API.
-      - Tile grid horizontal: 29 (NYC)
-      - Tile grid vertical: 7 (NYC)
-        * search for tile grid [here](https://www.usgs.gov/media/images/conterminous-us-landsat-analysis-ready-data-ard-tiles)
-        * you can also draw a polygon or circle to indicate or upload your desired geography.
-  4. If downloading many scenes use the Bulk Download options to help download all scenes at once.
-      - Click on the 'Show Result Controls', and select 'Add All results from Current Page to Bulk Download'
-      - Make sure to download not only the geo-tiff files, ex. LC08_CU_029007_20180710_20190614_C01_V01_ST.tif, but it's corresponding meta-data. You can export it on 'Click Here to Export Your Results' that is next to the Data Set section
-      - Pop up will show to incide desired export output format, choose "Comma (,) Delimited".
-     
-- Ground Monitor Temperature:
-  1. Select your local stations. (Central Park, LaGuardia, Kennedy)
-  [Local Climatological Data (LCD)](https://www.ncdc.noaa.gov/cdo-web/datatools/lcd)
-  2. You need to add the data to your cart, then go to your cart, where you can select that you want a csv and subset to the dates you are interested in.
-     - [Central Park](https://www.ncdc.noaa.gov/cdo-web/datasets/LCD/stations/WBAN:94728/detail)
-
-## Validating Data
-- Satellite Readings
-  1. Cloud Cover: https://landsat.usgs.gov/landsat-8-cloud-cover-assessment-validation-data#Urban
-  2. Comparing Ground Monitor temperatures to Satellite readings
-
-
-Citation: Landsat Level-2 Surface Temperature Science Product courtesy of the U.S. Geological Survey.

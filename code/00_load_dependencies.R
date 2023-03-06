@@ -5,8 +5,9 @@
 #' 
 #' IF YOU DO NOT WANT TO INSTALL ANY OF THESE PACKAGES, DO NOT RUN THIS CODE.
 
-list.of.packages <- c("tidyverse", "janitor", "raster", "sf", "leaflet", "XML", "methods", "lubridate", 
-                      "rgdal", "ggplot2", "htmlwidgets", "exactextractr", "terra")
+list.of.packages <- c("tidyverse", "raster", "sf", "leaflet", "XML", 
+                      "methods", "rgdal", "ggplot2", "htmlwidgets", 
+                      "exactextractr", "terra", "colorRamps", "spatialEco")
 
 options(scipen = 999)
 
@@ -39,7 +40,7 @@ unzip_sf <- function(zip_url) {
   return(your_SHP_file)
 }
 
-# Function to Convert Kelving to Fahrenheit
+# Function to Convert Kelvin to Fahrenheit
 k_to_f <- function(temp) { fahrenheight <- ((temp - 273) * (9/5)) + 32  }
 
 temp_func_2 <-function(rastername) {
@@ -55,4 +56,4 @@ temp_func_2 <-function(rastername) {
 }
 
 # remove created variables for packages
-rm(list.of.packages,new.packages)
+rm(list.of.packages, new.packages)
