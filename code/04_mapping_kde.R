@@ -8,18 +8,63 @@ source("code/00_load_dependencies.R")
 median_temp = raster("data/output/f_median_temp.tif")
 deviation_temp = raster("data/output/f_deviation.tif")
 
+#nyc = st_read("https://data.cityofnewyork.us/api/geospatial/tqmj-j8zm?method=export&format=GeoJSON") %>%
+#  st_transform("+proj=longlat +datum=WGS84")
 
 
 ################################################################################
 # convert raster to points for KDE 
 ################################################################################
 
-points_temp = rasterToPoints(deviation_temp, spatial = T) %>%
-  st_as_sf()
+points_temp = rasterToPoints(deviation_temp, spatial = T) %>% 
+  #as_tibble() %>%
+  #mutate(x = x * 100000, y = y * 100000) %>%
+  st_as_sf() %>%
+  #st_as_sf(coords = c("x", "y"), dim = "XY") %>% 
+  st_set_crs(crs(deviation_temp)) %>% 
+  st_transform(4326)# %>%
+  #st_transform(28992)# 
+#st_set_crs(28992) 
+  
 
+
+cell_size <- 10
+band_width <- 150
+
+raster_meuse <- points_temp %>% dplyr::select() %>%
+  create_raster(cell_size = cell_size)
+
+kde <- points_temp %>% dplyr::select() %>%
+  kde(band_width = band_width, weights = points_temp$layer, kernel = "triweight", grid = raster_meuse)
+
+plot(kde)
+
+stop()
+
+# 
+# tm_shape(kde) +
+#   tm_raster(palette = "viridis", title = "KDE Estimate") +
+#   tm_shape(meuse) +
+#   tm_bubbles(size = 0.1, col = "red") +
+#   tm_layout(legend.outside = TRUE)
+
+
+# 
+# 
+# ( e <- st_bbox(points_temp)[c(1,3,2,4)] ) 
+# test <- sf.kde(x = points_temp, y = points_temp$layer, ref = e,  
+#                       standardize = TRUE, 
+#                       scale.factor = 10000)
+# 
 kde_heat = sp.kde(x = points_temp, y = points_temp$layer, 
-                   bw = 0.000001, standardize = T, scale.factor = 10000)
+                  res = 0.001, bw = 0.0001, scale.factor = 100000,
+                  standardize = T )
 plot(kde_heat)
+
+bw = 0.00000001
+
+# writeRaster(kde_heat, filename="data/output/kde_heatmap.tif", overwrite=TRUE)
+
 
 points_temp = as(points_temp, "Spatial")
 
@@ -73,3 +118,18 @@ median_temp_sf <- read_sf("data/output/median_satellite_surface_temperatures.shp
 median_temp_sp <- as(median_temp_sf, "Spatial")
 nyc1 <-read_sf("data/output/nyc_custom_shapefile/nyc_custom_shapefile.shp") %>%
   st_transform("+proj=longlat +datum=WGS84")
+
+
+
+
+data(meuse, package = "sp")
+meuse <- st_as_sf(meuse, coords = c("x", "y"), crs = 28992,
+                  agr = "constant")
+
+# Unweighted KDE (spatial locations only)				
+pt.kde <- sf.kde(x = meuse, bw = 1000, standardize = TRUE,
+                 scale.factor = 10000, res=40)
+
+plot(pt.kde, main="Unweighted kde")
+plot(st_geometry(meuse), pch=20, col="red", add=TRUE)
+
