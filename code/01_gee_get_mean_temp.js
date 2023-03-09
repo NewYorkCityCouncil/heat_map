@@ -34,10 +34,10 @@ function prepSrL8(image) {
 // -----------------------------------------------------------------------------
 // get the collection for correct location, days, filtered and masked for clouds
 var landsat8 = ee.ImageCollection('LANDSAT/LC08/C02/T1_L2')
-                  .filterDate('2014-05-01', '2022-10-01')
+                  .filterDate('2020-05-01', '2022-10-01')
                   .filter(ee.Filter.calendarRange(6, 9, 'month'))
-                  .filter(ee.Filter.lt('CLOUD_COVER', 40))
                   .filterBounds(nyc)
+                  .filter(ee.Filter.contains('.geo', nyc))
                   .map(function(image){return image.clip(nyc_bounds)})
                   .map(prepSrL8);
                   
@@ -62,7 +62,7 @@ Map.addLayer(mean_heat, visParams, "overall mean temp");
 Export.image.toDrive({
   image: mean_heat,
   scale: 30,
-  description: 'surfacetemperature_mean_2014_2022',
+  description: 'surfacetemperature_mean_2020_2022',
   fileFormat: 'GeoTIFF',
 });
 
@@ -79,6 +79,6 @@ Map.addLayer(median_heat, visParams, "overall median temp");
 Export.image.toDrive({
   image: median_heat,
   scale: 30,
-  description: 'surfacetemperature_median_2014_2022',
+  description: 'surfacetemperature_median_2020_2022',
   fileFormat: 'GeoTIFF',
 });
