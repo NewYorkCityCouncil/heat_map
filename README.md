@@ -8,13 +8,46 @@ Using satellite data from the US Geological Survey’s Landsat 8 satellite, the 
 
 The result is clear: some parts of the city are hotter during the summer months than others, particularly in south/southeast Brooklyn and southeast Queens. 
 
-## Quick Links 
+## FAQ
 
-#### - [Download our NYC Summer 2014-2022 surface temperature data.](data/input/surfacetemperature_mean_2014_2022.tiff)
+#### Can I use this map in my own work?
 
-#### - [Download surface temperature data from the USGS.](code/01_gee_get_mean_temp.js)
+Yes! Please attribute credit to the New York City Council Data Team. 
 
-#### - [Download the html NYC heat map.](visuals/summer_heat_smoothed_deviation_raster.html)
+#### What does "deviation from the mean" mean?
+
+For every pixel in the data, we find the average temperature over all days (that we have data for) during June through September in 2020-2022. This gives us an average surface temperature in every location. Then, we find the average over all locations and subtract that from each individual location, creating our "deviation from the mean" measure. This shows how much hotter or cooler that location is compared to the NYC average. 
+
+#### How did you make this map?
+
+You can read about how we created this map in the [Implementation](#Implementation) section of this document.
+
+#### How does your methodology deal with clouds?
+
+In the code we use to get our data from Google Earth Engine, we filter out clouds from every image before finding the average surface temperature at each point. This means we can include images even on cloudy days and will only be including valid data. See more in the [Implementation](#Implementation) section.
+
+#### How does your methodology deal with creating neighborhood level estimates?
+
+Since we're most interested in neighborhood level effects, we're taking the very fine grain data (each pixel is 30m, so about 10 data points every long block) and averaging over all areas to smooth the data out. For every pixel in the raw data, the final data we visualize 
+
+#### What happened to the previous map?
+
+We've updated the map! We're using more data now, and have slightly changed how we're visualizing the data, but the current code is slightly easier to follow and update. 
+
+#### Where can I download a high res version of the map?
+
+You can access and download the html map [here](visuals/summer_heat_smoothed_deviation_raster.html).
+
+#### Where can I download the cleaned data that is shown in the map?
+
+You can access and download that data [here](data/input/surfacetemperature_mean_2014_2022.tiff).
+
+#### Where is the data originally sourced from?
+
+We're using [satellite data from Landsat 8](https://developers.google.com/earth-engine/datasets/catalog/LANDSAT_LC08_C02_T1_L2), as produced by USGS and disseminated by Google Earth Engine. The satellite was launched in 2013, and collects images across the globe, with an approximately 16 day revisit rate and between 15 and 100 meter resolution. We downloaded it through Google Earth Engine (and that code is provided), though it can also be accessed through the [USGS Earth Explorer](https://earthexplorer.usgs.gov/) or the [USGS Machine-to-Machine API](https://m2m.cr.usgs.gov/).
+ 
+#### What's the difference between surface temperature and air temperature?
+
 
 
 ## Background
@@ -53,16 +86,13 @@ This script is meant to be run in [Google Earth Engine](https://code.earthengine
 Pulls in all Landsat 8 imagery (Collection 2, Tier 1) covering the NYC area and filters for images: 
 * from 2014 onwards
 * falling from June to September in any year
-* with <= 40% cloud cover 
 
 For this collection of images, the images are each "masked" to remove any part of the image with a cloud or a cloud shadow and clips to the boundaries of NYC, including removing any water area. The collection of images is then collapsed by taking the mean - for each pixel over NYC we take the mean at that pixel over all images. There are 107 images in the collection after all filters. (An additional 80 can be gained by removing the cloud filter).
 
 The script provided then exports the final raster of mean temperatures at each pixel to Google Drive. To get this data you can paste the script provided into the web based code editor and hit "Run" above your code. After it is processed, you can hit the "Run" in the console to export the image to your Google Drive. This image can then be download for any local computation or plotting. 
 
 
-### [Check satellite measures against ground monitors](code/01_landsat_air_correlation.R)
-
-### [Mapping the raster data](code/03_mapping_rasters.R)
+### [Mapping the raster data](code/02_mapping_2020_2022_raster.R)
 
 
 ## Additional notes + resources about the data

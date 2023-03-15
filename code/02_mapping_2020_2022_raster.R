@@ -154,7 +154,7 @@ values(deviation_plot) = ifelse(values(deviation_plot) >= 7, 7, values(deviation
 
 # mapping 
 
-#colorRamps::matlab.like(15), 
+#heat_pal = colorRamps::matlab.like(15), 
 heat_pal = colorNumeric(rev(brewer.pal(11, "RdYlBu")), 
                         domain = c(values(deviation_plot), 
                                    # extend domain past so border values aren't NA
@@ -205,44 +205,3 @@ map = leaflet(options = leafletOptions(zoomControl = FALSE,
 
 
 withr::with_dir('visuals', saveWidget(map, file="summer_heat_smoothed_deviation_raster.html"))
-
-
-
-################################################################################
-# smoothed plot - upsampling
-################################################################################
-
-deviation_disaggregated = disaggregate(deviation, fact = 4, method = "bilinear") %>% 
-  mask(nyc)
-
-values(deviation_disaggregated) = ifelse(values(deviation_disaggregated) <= -7, -7, values(deviation_disaggregated))
-values(deviation_disaggregated) = ifelse(values(deviation_disaggregated) >= 7, 7, values(deviation_disaggregated))
-
-dividied_deviation_disaggregated = splitRaster(deviation_disaggregated, 
-                                               nx = 4, ny = 3)
-
-map = leaflet(options = leafletOptions(zoomControl = FALSE, 
-                                       minZoom = 10, 
-                                       maxZoom = 16)) %>%
-  addProviderTiles('CartoDB.Positron', 
-                   options = providerTileOptions(minZoom = 10, maxZoom = 16)) %>%
-  addRasterImage(dividied_deviation_disaggregated[[1]], colors = heat_pal, opacity = 0.4) %>% 
-  addRasterImage(dividied_deviation_disaggregated[[2]], colors = heat_pal, opacity = 0.4) %>% 
-  addRasterImage(dividied_deviation_disaggregated[[3]], colors = heat_pal, opacity = 0.4) %>% 
-  addRasterImage(dividied_deviation_disaggregated[[4]], colors = heat_pal, opacity = 0.4) %>% 
-  addRasterImage(dividied_deviation_disaggregated[[5]], colors = heat_pal, opacity = 0.4) %>% 
-  addRasterImage(dividied_deviation_disaggregated[[6]], colors = heat_pal, opacity = 0.4) %>% 
-  addRasterImage(dividied_deviation_disaggregated[[7]], colors = heat_pal, opacity = 0.4) %>% 
-  addRasterImage(dividied_deviation_disaggregated[[8]], colors = heat_pal, opacity = 0.4) %>% 
-  addRasterImage(dividied_deviation_disaggregated[[9]], colors = heat_pal, opacity = 0.4) %>% 
-  addRasterImage(dividied_deviation_disaggregated[[10]], colors = heat_pal, opacity = 0.4) %>% 
-  addRasterImage(dividied_deviation_disaggregated[[11]], colors = heat_pal, opacity = 0.4) %>% 
-  addRasterImage(dividied_deviation_disaggregated[[12]], colors = heat_pal, opacity = 0.4) %>% 
-  addLegend_decreasing(position = "topleft", 
-                       pal = heat_pal, 
-                       values = values(deviation_plot), 
-                       title = paste0("Temperature Deviation", "<br>", "from Mean"),  
-                       labFormat = labelFormat(prefix = "  "), decreasing = T)
-
-
-withr::with_dir('visuals', saveWidget(map, file="summer_heat_upsampled_deviation_raster.html"))
