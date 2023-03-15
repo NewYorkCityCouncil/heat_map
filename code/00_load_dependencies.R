@@ -7,7 +7,8 @@
 
 list.of.packages <- c("tidyverse", "raster", "sf", "leaflet", "XML", 
                       "methods", "rgdal", "ggplot2", "htmlwidgets", 
-                      "exactextractr", "terra", "colorRamps", "spatialEco", "RColorBrewer")
+                      "exactextractr", "terra", "colorRamps", "spatialEco", 
+                      "RColorBrewer", "SpaDES.tools")
 
 options(scipen = 999)
 
