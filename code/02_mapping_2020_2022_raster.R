@@ -148,8 +148,8 @@ writeRaster(deviation, "data/output/f_deviation",
 # since leaflet coloring is linear, this lets us use the larger range
 
 deviation_plot = deviation
-values(deviation_plot) = ifelse(values(deviation_plot) <= -8, -8, values(deviation_plot))
-values(deviation_plot) = ifelse(values(deviation_plot) >= 8, 8, values(deviation_plot))
+values(deviation_plot) = ifelse(values(deviation_plot) <= -7, -7, values(deviation_plot))
+values(deviation_plot) = ifelse(values(deviation_plot) >= 7, 7, values(deviation_plot))
 
 
 # mapping 
@@ -179,17 +179,17 @@ withr::with_dir('visuals', saveWidget(map, file="summer_heat_deviation_raster.ht
 
 
 ################################################################################
-# smoothed plot
+# smoothed plot - 1.5 block average
 ################################################################################
 
 # 9 pixels is about 1 long block, so 27 is about 1.5 blocks in each direction
 
 n = 27
-deviation_smooth = focal(deviation, w=matrix(rep(1, n^2), nrow=n), 
-                         fun="mean", na.rm=T) %>% mask(nyc)
+deviation_smooth = focal(deviation, w = matrix(rep(1, n^2), nrow = n), 
+                         fun = "mean", na.rm = T, pad = T) %>% mask(nyc)
 
-values(deviation_smooth) = ifelse(values(deviation_smooth) <= -8, -8, values(deviation_smooth))
-values(deviation_smooth) = ifelse(values(deviation_smooth) >= 8, 8, values(deviation_smooth))
+values(deviation_smooth) = ifelse(values(deviation_smooth) <= -7, -7, values(deviation_smooth))
+values(deviation_smooth) = ifelse(values(deviation_smooth) >= 7, 7, values(deviation_smooth))
 
 map = leaflet(options = leafletOptions(zoomControl = FALSE, 
                                        minZoom = 10, 
