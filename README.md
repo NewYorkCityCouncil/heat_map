@@ -28,7 +28,9 @@ In the code we use to get our data from Google Earth Engine, we filter out cloud
 
 #### How does your methodology deal with creating neighborhood level estimates?
 
-Since we're most interested in neighborhood level effects, we're taking the very fine grain data (each pixel is 30m, so about 10 data points every long block) and averaging over all areas to smooth the data out. For every pixel in the raw data, the final data we visualize 
+Since we're most interested in neighborhood level effects, we're taking the very fine grain data (each pixel is 30m, so about 10 data points every long block) and averaging over all areas to smooth the data out. For every pixel in the raw data, the final data we visualize we are averaging over all cells that are about 1.5 long blocks in any direction. 
+
+To be specific, we are calculating "moving window" averages over a square area 27 pixels tall and wide. Given each pixel represents 30m, that means the total area we are averaging over is about half a mile tall and wide. 
 
 #### What happened to the previous map?
 
@@ -36,7 +38,7 @@ We've updated the map! We're using more data now, and have slightly changed how 
 
 #### Where can I download a high res version of the map?
 
-You can access and download the html map [here](visuals/summer_heat_smoothed_deviation_raster.html).
+You can access and download the html map [here](visuals/summer_heat_smoothed_deviation_raster.html). You can also download a map at the native satellite resolution of 30m [here](visuals/summer_heat_deviation_raster.html).
 
 #### Where can I download the cleaned data that is shown in the map?
 
@@ -59,23 +61,15 @@ After discussion with a NASA-affiliated expert, we've determined that actually p
 
 The data structure required to reproduce this code is as follows. These files are all provided in the repo, though some of them are not raw data directly downloaded from the source - both of the files outside the raw folder are generated through the `01_gee_get_mean_temp.js` file using the process described in the implementation section. 
 
-The ground monitor temps are sourced from [NOAA](https://www.ncdc.noaa.gov/cdo-web/datatools/lcd).
-
 ```
  └── input
   	 ├── surfacetemperature_mean_2014_2022.tiff
-  	 ├── surfacetemperature_median_2014_2022.tiff
-  	 └──  raw
-  	      └── Ground_Monitor_Temps_NYC
-              ├── central_park_temp.csv 
-              ├── jfk_temp.csv
-              └── laguardia_temp.csv
+  	 └── surfacetemperature_median_2014_2022.tiff
 ```
 
 Additional data sources are used but the data is pulled straight from the source. This includes: 
 
 * [park polygons](https://data.cityofnewyork.us/City-Government/Airport-Polygon/xfhz-rhsk)
-* [airport polygons](https://data.cityofnewyork.us/City-Government/Airport-Polygon/xfhz-rhsk)
 
 ## Implementation
 

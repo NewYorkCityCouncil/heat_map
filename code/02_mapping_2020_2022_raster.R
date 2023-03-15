@@ -49,11 +49,13 @@ addLegend_decreasing <- function (map, position = c("topright", "bottomright", "
       extra <- list(p_1 = p[1], p_n = p[n])
       p <- c("", paste0(100 * p, "%"), "")
       if (decreasing == TRUE){
+        if (is.null(labels)) {labels <- rev(labFormat(type = "numeric", cuts))}
         colors <- pal(rev(c(r[1], cuts, r[2])))
-        labels <- rev(labFormat(type = "numeric", cuts))
+        labels <- labels
       }else{
+        if (is.null(labels)) {labels <- labFormat(type = "numeric", cuts)}
         colors <- pal(c(r[1], cuts, r[2]))
-        labels <- rev(labFormat(type = "numeric", cuts))
+        labels <- labels
       }
       colors <- paste(colors, p, sep = " ", collapse = ", ")
     }
@@ -76,10 +78,12 @@ addLegend_decreasing <- function (map, position = c("topright", "bottomright", "
       mids <- quantile(values, probs = (p[-1] + p[-n])/2, na.rm = TRUE)
       if (decreasing == TRUE){
         colors <- pal(rev(mids))
-        labels <- rev(labFormat(type = "quantile", cuts, p))
+        if(is.null(labels)) {labels = rev(labFormat(type = "quantile", cuts, p))}
+        labels <- labels
       }else{
         colors <- pal(mids)
-        labels <- labFormat(type = "quantile", cuts, p)
+        if(is.null(labels)) {labels = labFormat(type = "quantile", cuts, p)}
+        labels <- labels
       }
     }
     else if (type == "factor") {
@@ -148,14 +152,13 @@ writeRaster(deviation, "data/output/f_deviation",
 # since leaflet coloring is linear, this lets us use the larger range
 
 deviation_plot = deviation
-values(deviation_plot) = ifelse(values(deviation_plot) <= -7, -7, values(deviation_plot))
-values(deviation_plot) = ifelse(values(deviation_plot) >= 7, 7, values(deviation_plot))
+values(deviation_plot) = ifelse(values(deviation_plot) <= -8, -8, values(deviation_plot))
+values(deviation_plot) = ifelse(values(deviation_plot) >= 8, 8, values(deviation_plot))
 
 
 # mapping 
 
-#heat_pal = colorRamps::matlab.like(15), 
-heat_pal = colorNumeric(rev(brewer.pal(11, "RdYlBu")), 
+heat_pal = colorNumeric(colorRamps::matlab.like(15),
                         domain = c(values(deviation_plot), 
                                    # extend domain past so border values aren't NA
                                    min(values(deviation_plot), na.rm=T)-0.1, 
@@ -172,7 +175,9 @@ map = leaflet(options = leafletOptions(zoomControl = FALSE,
             pal = heat_pal, 
             values = values(deviation_plot), 
             title = paste0("Temperature Deviation", "<br>", "from Mean"),  
-            labFormat = labelFormat(prefix = "  "), decreasing = T)
+            labels = c("> 8°", "6°", "4°", "2°", "0°", "-2°", 
+                       "-4°", "-6°", "< -8°"), 
+            decreasing = T)
 
 
 withr::with_dir('visuals', saveWidget(map, file="summer_heat_deviation_raster.html"))
@@ -188,8 +193,8 @@ n = 27
 deviation_smooth = focal(deviation, w = matrix(rep(1, n^2), nrow = n), 
                          fun = "mean", na.rm = T, pad = T) %>% mask(nyc)
 
-values(deviation_smooth) = ifelse(values(deviation_smooth) <= -7, -7, values(deviation_smooth))
-values(deviation_smooth) = ifelse(values(deviation_smooth) >= 7, 7, values(deviation_smooth))
+values(deviation_smooth) = ifelse(values(deviation_smooth) <= -8, -8, values(deviation_smooth))
+values(deviation_smooth) = ifelse(values(deviation_smooth) >= 8, 8, values(deviation_smooth))
 
 map = leaflet(options = leafletOptions(zoomControl = FALSE, 
                                        minZoom = 10, 
@@ -201,7 +206,9 @@ map = leaflet(options = leafletOptions(zoomControl = FALSE,
                        pal = heat_pal, 
                        values = values(deviation_plot), 
                        title = paste0("Temperature Deviation", "<br>", "from Mean"),  
-                       labFormat = labelFormat(prefix = "  "), decreasing = T)
+                       labels = c("> 8°", "6°", "4°", "2°", "0°", "-2°", 
+                                  "-4°", "-6°", "< -8°"), 
+                       decreasing = T)
 
 
 withr::with_dir('visuals', saveWidget(map, file="summer_heat_smoothed_deviation_raster.html"))
