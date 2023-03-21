@@ -137,7 +137,6 @@ writeRaster(mean_temp, "data/output/f_mean_temp",
             format = "GTiff", overwrite = T)
 
 deviation = mean_temp - mean(values(mean_temp), na.rm=T)
-z_score = scale(mean_temp)
 
 # save out the deviation
 writeRaster(deviation, "data/output/f_deviation", 
@@ -157,7 +156,6 @@ values(deviation_plot) = ifelse(values(deviation_plot) >= 8, 8, values(deviation
 
 
 # mapping 
-
 heat_pal = colorNumeric(colorRamps::matlab.like(15),
                         domain = c(values(deviation_plot), 
                                    # extend domain past so border values aren't NA
@@ -196,6 +194,16 @@ deviation_smooth = focal(deviation, w = matrix(rep(1, n^2), nrow = n),
 values(deviation_smooth) = ifelse(values(deviation_smooth) <= -8, -8, values(deviation_smooth))
 values(deviation_smooth) = ifelse(values(deviation_smooth) >= 8, 8, values(deviation_smooth))
 
+heat_pal = colorNumeric(colorRamps::matlab.like(15),
+                        domain = c(values(deviation_smooth), 
+                                   # extend domain past so border values aren't NA
+                                   min(values(deviation_smooth), na.rm=T)-0.1, 
+                                   max(values(deviation_smooth), na.rm=T)+0.1),
+                        na.color = "transparent")
+
+writeRaster(deviation_smooth, "data/output/f_deviation_smooth", 
+            format = "GTiff", overwrite = T)
+
 map = leaflet(options = leafletOptions(zoomControl = FALSE, 
                                        minZoom = 10, 
                                        maxZoom = 16)) %>%
@@ -204,7 +212,7 @@ map = leaflet(options = leafletOptions(zoomControl = FALSE,
   addRasterImage(deviation_smooth, colors = heat_pal, opacity = 0.4) %>% 
   addLegend_decreasing(position = "topleft", 
                        pal = heat_pal, 
-                       values = values(deviation_plot), 
+                       values = values(deviation_smooth), 
                        title = paste0("Temperature Deviation", "<br>", "from Mean"),  
                        labels = c("> 8°", "6°", "4°", "2°", "0°", "-2°", 
                                   "-4°", "-6°", "< -8°"), 
