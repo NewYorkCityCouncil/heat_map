@@ -62,18 +62,7 @@ After discussion with a NASA-affiliated expert, we've determined that actually p
 
 ## Data 
 
-No data structure is required to be able to reproduce this code, though there is a process requirement. To get the landsat data, you must first run the provided Google Earth Engine code
-The data structure required to reproduce this code is as follows. These files are all provided in the repo, though some of them are not raw data directly downloaded from the source - both of the files outside the raw folder are generated through the `01_gee_get_mean_temp.js` file using the process described in the implementation section. 
-
-```
- └── input
-  	 ├── surfacetemperature_mean_2014_2022.tiff
-  	 └── surfacetemperature_median_2014_2022.tiff
-```
-
-Additional data sources are used but the data is pulled straight from the source. This includes: 
-
-* [park polygons](https://data.cityofnewyork.us/City-Government/Airport-Polygon/xfhz-rhsk)
+No data structure is required to be able to reproduce this as all data is fetched through the code provided. See more in the [Implementation](#Implementation) section.
 
 ## Implementation
 
@@ -98,8 +87,8 @@ This script takes the mean temperature raster that we created in GEE, and proces
 * convert to Farenheit
 * figure out what the overall mean over all of NYC is and subtract it from all pixels. From here on we are dealing with a "deviation from the mean" measure rather than raw Farenheit. Instead it represents the difference (still in farenheit) from the city average. 
 
-At this point we create the native resolution version of the final map. This map shows very fine grain differences in temperature - you can distinguish the heat of the runways vs the greenery at Floyd Bennett Field, or the Met poking in to cool of Central Park. 
+At this point we create the native resolution version of the final map. This map shows very fine grain differences in temperature - you can distinguish the heat of the runways vs the greenery at Floyd Bennett Field, or the Met building surrounded by the cool of Central Park. 
 
-To process our fine grain data from Landsat to get a neighborhood level estimate we take an average for each pixel over a square area 27 pixels wide and high - 13 pixels on either side of the pixel of interest. As each pixel is 30m, that window covers about 390 meters = 1300 feet = 1.4 long blocks. This windowed average is created for all pixels in the map. For pixels close to the edge of NYC, only pixels in NYC are used to create their average.
+To process our fine grain data from Landsat to get a neighborhood level estimate we take an average for each pixel over a square area 27 pixels wide and high - 13 pixels on either side of the pixel of interest. As each pixel is 30m, that window covers about 390 meters = 1300 feet = 1.4 long blocks. This windowed average is created for all pixels in the map. Only pixels within NYC borders are used, so for pixels close to the border less data is used to create the average.
 
 Before plotting either map, we first cap the temperature deviations at |8|, so that the map doesn't too heavily focus on the few very extreme deviations (up to 30 degrees different from the city average!). If we don't cap the extreme deviations the map drowns all the variation in neighborhoods people live and work in by focusing on the extreme temperatures of parks, water, marshes, airports, and train yards. 
