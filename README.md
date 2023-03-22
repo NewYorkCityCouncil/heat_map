@@ -4,9 +4,11 @@
 
 In our warming climate, [with New York statewide annual temperature warming 3 degrees since 1970](https://www.dec.ny.gov/energy/94702.html#:~:text=The%20annual%20statewide%20average%20temperature,northern%20parts%20of%20the%20state.), extreme heat and unequal access to cool green spaces may become a more serious issue than ever before.
 
-Using satellite data from the US Geological Survey’s Landsat 8 satellite, the New York City Council’s Data Team put together a map of how temperature varies across the city.
+Using satellite data from the US Geological Survey’s Landsat 8 satellite, the New York City Council’s Data Team put together a map of how temperature varies across the city. Following a discussion with [Dr. Christian Braneon of Columbia The Environmental Justice and Climate Just Cities Network](https://people.climate.columbia.edu/networks/profile/environmental-justice-and-climate-just-cities-network), we decided to focus on relative temperature rather than presenting the raw surface temperature. Relative temperature gives us exactly the measure we're interested in - how neighborhoods are exposed to high heat relative to one another. 
 
 The result is clear: some parts of the city are hotter during the summer months than others, particularly in south/southeast Brooklyn and southeast Queens. The differences in neighborhood temperature are dominated by the presence of parks - where there are green spaces there are cool spaces. 
+
+https://people.climate.columbia.edu/users/profile/christian-v-braneon
 
 ## FAQ
 
@@ -53,11 +55,6 @@ We downloaded it through Google Earth Engine (and that code is provided), though
 #### What's the difference between surface temperature and air temperature?
 
 You can learn more about how Landsat 8 measures temperature using the Thermal Infrared Sensor in two thermal bands [here](https://landsat.gsfc.nasa.gov/satellites/landsat-8/spacecraft-instruments/thermal-infrared-sensor/).
-
-
-## Background
-
-After discussion with a NASA-affiliated expert, we've determined that actually presenting the true surface temperature, regardless of whether it's measured in Kelvin, Celsius or Fahrenheit, will not be very informative for us or end users; what does it mean if the surface temperature is 95 degrees F on a summer day? Is that hold or cold? Additionally, relying on exact temperatures increases the likelihood of inaccuracy due to the susceptibility of the data to cloud coverage and other factors that obscure satelite access to the ground. However, as the expert ----(replace with Name and link to them as a source)--- pointed out, while temperatures may fluctuate, and are susceptible to "memory" (i.e. yesterday's rain may result in cooler surface temperatures than expected, even on a scorching day), they nonetheless operate consistently across space; the parts of the city that are the warmest today are still going to be the parts of the city that are warmest tomorrow. This consistency allows us to look at just a handful of the clearest days to get an accurate impression not of temperature, but of relative temperature - how the temperatures compare to each other.
 
 
 ## Data 
