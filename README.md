@@ -38,7 +38,7 @@ We've updated the map! We're using more data now, and have slightly changed how 
 
 #### Where can I download a high res version of the map?
 
-You can access and download the html map [here](visuals/summer_heat_smoothed_deviation_raster.html). You can also download an html map at the native satellite resolution of 30m [here](visuals/summer_heat_deviation_raster.html) if you'd like to look at how heat differs at a finer grain level.
+You can access and download the html map [here](visuals/summer_heat_smoothed_deviation_raster.html) and a png map [here](visuals/summer_heat_smoothed_deviation_raster.png). You can also download an html map at the native satellite resolution of 30m [here](visuals/summer_heat_deviation_raster.html) and the png map [here](visuals/summer_heat_deviation_raster.png) if you'd like to look at how heat differs at a finer grain level.
 
 #### Where can I download the cleaned data that is shown in the map?
 

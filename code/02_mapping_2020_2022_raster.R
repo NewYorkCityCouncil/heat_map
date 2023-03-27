@@ -178,8 +178,9 @@ map = leaflet(options = leafletOptions(zoomControl = FALSE,
             decreasing = T)
 
 
-withr::with_dir('visuals', saveWidget(map, file="summer_heat_deviation_raster.html"))
-
+saveWidget(map, file = file.path("visuals", "summer_heat_deviation_raster.html"))
+mapshot(map, file = file.path("visuals", "summer_heat_deviation_raster.png"),
+         remove_controls = c("homeButton", "layersControl"))
 
 ################################################################################
 # smoothed plot - 1.5 block average
@@ -219,4 +220,10 @@ map = leaflet(options = leafletOptions(zoomControl = FALSE,
                        decreasing = T)
 
 
-withr::with_dir('visuals', saveWidget(map, file="summer_heat_smoothed_deviation_raster.html"))
+saveWidget(map, file=file.path('visuals', 
+                               "summer_heat_smoothed_deviation_raster.html"))
+mapshot(map, 
+        file = file.path("visuals", "summer_heat_smoothed_deviation_raster.png"),
+        remove_controls = c("homeButton", "layersControl"))
+           
+
