@@ -4,11 +4,9 @@
 
 In our warming climate, [with New York statewide annual temperature warming 3 degrees since 1970](https://www.dec.ny.gov/energy/94702.html#:~:text=The%20annual%20statewide%20average%20temperature,northern%20parts%20of%20the%20state.), extreme heat and unequal access to cool green spaces may become a more serious issue than ever before.
 
-Using satellite data from the US Geological Survey's Landsat 8 satellite, the New York City Council's Data Team put together a map of how temperature varies across the city. Following a discussion with [Dr. Christian Braneon of Columbia The Environmental Justice and Climate Just Cities Network](https://people.climate.columbia.edu/networks/profile/environmental-justice-and-climate-just-cities-network), we decided to focus on relative temperature rather than presenting the raw surface temperature. Relative temperature gives us exactly the measure we're interested in - how neighborhoods are exposed to high heat relative to one another.
+Using satellite data from the US Geological Survey's Landsat 8 satellite, the New York City Council's Data Team put together a map of how temperature varies across the city. Following a discussion with [Dr. Christian Braneon of Columbia The Environmental Justice and Climate Just Cities Network](https://people.climate.columbia.edu/users/profile/christian-v-braneon), we decided to focus on relative temperature rather than presenting the raw surface temperature. Relative temperature gives us exactly the measure we're interested in - how neighborhoods are exposed to high heat relative to one another.
 
 The result is clear: some parts of the city are hotter during the summer months than others, particularly in south/southeast Brooklyn and southeast Queens. The differences in neighborhood temperature are dominated by the presence of parks - where there are green spaces there are cool spaces.
-
-<https://people.climate.columbia.edu/users/profile/christian-v-braneon>
 
 ## FAQ
 
@@ -85,7 +83,7 @@ At this point we create the native resolution version of the final map. This map
 
 To process our fine grain data from Landsat to get a neighborhood level estimate we take an average for each pixel over a square area 27 pixels wide and high - 13 pixels on either side of the pixel of interest. As each pixel is 30m, that window covers about 390 meters = 1300 feet = 1.4 long blocks. This windowed average is created for all pixels in the map. Only pixels within NYC borders are used, so for pixels close to the border less data is used to create the average.
 
-Before plotting either map, we first cap the temperature deviations at \|8\|, so that the map doesn't too heavily focus on the few very extreme deviations (up to 30 degrees different from the city average!). If we don't cap the extreme deviations the map drowns all the variation in neighborhoods people live and work in by focusing on the extreme temperatures of parks, water, marshes, airports, and train yards.
+Before plotting either map, we first cap the temperature deviations at 8 and -8, so that the map doesn't too heavily focus on the few very extreme deviations (up to 30 degrees different from the city average!). If we don't cap the extreme deviations the map drowns all the variation in neighborhoods people live and work in by focusing on the extreme temperatures of parks, water, marshes, airports, and train yards.
 
 ## Other Maps: Air Conditioning
 
