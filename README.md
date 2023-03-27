@@ -60,7 +60,7 @@ You can learn more about how Landsat 8 measures temperature using the Thermal In
 
 No data structure is required to be able to reproduce this as all data is fetched through the code provided. See more in the [Implementation](#Implementation) section.
 
-## Implementation {#implementation}
+## Implementation 
 
 ### [Download temperature rasters over the city using Google Earth Engine](code/01_gee_get_mean_temp.js)
 
