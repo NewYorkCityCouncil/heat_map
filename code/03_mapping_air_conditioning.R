@@ -72,7 +72,7 @@ map <-  leaflet(ac_shp,
               fillColor = ~pal_puma(ac_shp$lack_ac),
               fillOpacity = 0.9,
               label = lapply(labels,htmltools::HTML)) %>% 
-  addLegend(position ="bottomright", 
+  addLegend(position ="topleft", 
             pal = pal_puma, 
             opacity = 0.9,
             values = ac_shp$lack_ac,
