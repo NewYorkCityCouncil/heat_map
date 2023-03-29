@@ -75,7 +75,7 @@ The script provided then exports the final raster of mean temperatures at each p
 This script takes the mean temperature raster that we created in GEE, and processes it for the final map. To get the final product we take the following steps:
 
 -   crop to be only the NYC area, removing water area
--   convert to Kelvin using the scale and offset parameters provided in the GEE [data dictionary]((https://developers.google.com/earth-engine/datasets/catalog/LANDSAT_LC08_C02_T1_L2))
+-   convert to Kelvin using the scale and offset parameters provided in the GEE [data dictionary]((https://developers.google.com/earth-engine/datasets/catalog/LANDSAT_LC08_C02_T1_L2). The raw data provided by GEE are not in Kelvin, and the data must first be scaled, then offset to get the data in the correct range. 
 -   convert to Farenheit
 -   figure out what the overall mean over all of NYC is and subtract it from all pixels. From here on we are dealing with a "deviation from the mean" measure rather than raw Farenheit. Instead it represents the difference (still in farenheit) from the city average.
 
