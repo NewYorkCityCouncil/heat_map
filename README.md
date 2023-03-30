@@ -10,7 +10,7 @@ The result is clear: some parts of the city are hotter during the summer months 
 
 ## FAQ
 
-#### Can I use this map in my own work?
+#### Can I use this [map](https://newyorkcitycouncil.github.io/heat_map/visuals/summer_heat_smoothed_deviation_raster.html) in my own work?
 
 Yes! Please attribute credit to the New York City Council Data Team.
 
