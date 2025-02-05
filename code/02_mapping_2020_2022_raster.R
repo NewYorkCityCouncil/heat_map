@@ -118,7 +118,7 @@ addLegend_decreasing <- function (map, position = c("topright", "bottomright", "
 # load data
 ################################################################################
 
-nyc = st_read("https://data.cityofnewyork.us/api/geospatial/tqmj-j8zm?method=export&format=GeoJSON") %>%
+nyc = st_read("https://data.cityofnewyork.us/api/geospatial/jgqm-ccbd?method=export&format=GeoJSON") %>%
   st_transform("+proj=longlat +datum=WGS84")
 
 mean_temp = raster('data/input/surfacetemperature_mean_2020_2022.tif')
@@ -227,3 +227,26 @@ mapshot(map,
         remove_controls = c("homeButton", "layersControl"), vwidth = 1000, vheight = 850)
            
 
+################################################################################
+# custom smoothed plot - 1.5 block average
+################################################################################
+
+
+map = leaflet(options = leafletOptions(zoomControl = FALSE, 
+                                       minZoom = 11, 
+                                       maxZoom = 18)) %>%
+  addProviderTiles('CartoDB.PositronNoLabels', 
+                   options = providerTileOptions(minZoom = 11, maxZoom = 18)) %>%
+  addRasterImage(deviation_smooth, colors = heat_pal, opacity = 0.3) %>% 
+  addLegend_decreasing(position = "topleft", 
+                       pal = heat_pal, 
+                       values = values(deviation_smooth), 
+                       title = paste0("Temperature Deviation", "<br>", "from Mean"),  
+                       labels = c("> 8°", "6°", "4°", "2°", "0°", "-2°", 
+                                  "-4°", "-6°", "< -8°"), 
+                       decreasing = T) %>%
+  addProviderTiles('CartoDB.PositronOnlyLabels', #'Stadia.StamenTonerLabels'/'CartoDB.PositronOnlyLabels'
+                   options = providerTileOptions(minNativeZoom=15)) 
+
+saveWidget(map, file=file.path('visuals', 
+                               "custom_street_names_summer_heat_smoothed_deviation_raster.html"))
