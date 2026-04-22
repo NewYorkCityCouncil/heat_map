@@ -18,6 +18,8 @@ nyc = nyc
                                  ['Kings', 'Richmond', 'New York', 
                                   'Queens', 'Bronx'])).geometry()
 
+Map.setCenter(-73.9860, 40.7302, 10.5);
+
 
 // -----------------------------------------------------------------------------
 // Function to map across image collection to mask cloud pixels ----------------
@@ -34,7 +36,7 @@ function prepSrL8(image) {
 // -----------------------------------------------------------------------------
 // get the collection for correct location, days, filtered and masked for clouds
 var landsat8 = ee.ImageCollection('LANDSAT/LC08/C02/T1_L2')
-                  .filterDate('2020-05-01', '2022-10-01')
+                  .filterDate('2016-05-01', '2025-10-01')
                   .filter(ee.Filter.calendarRange(6, 9, 'month'))
                   .filterBounds(nyc)
                   .filter(ee.Filter.contains('.geo', nyc))
@@ -50,35 +52,70 @@ print(landsat8.size())
 // get means for entire period and exporting -----------------------------------
 
 
-// get overall mean
+// get 10 year mean -------------------------------------------------------------
 var mean_heat = landsat8
                   .select('ST_B10')
                   .reduce(ee.Reducer.mean())
                   .clip(nyc);
                   
-var visParams = {min: 45000, max: 50000, palette: palettes.colorbrewer.Spectral[9].reverse()};
-Map.addLayer(mean_heat, visParams, "overall mean temp");
+var visParams = {min: 44500, max: 49000, palette: palettes.colorbrewer.Spectral[9].reverse()};
+Map.addLayer(mean_heat, visParams, "10yr mean temp");
         
 Export.image.toDrive({
   image: mean_heat,
   scale: 30,
-  description: 'surfacetemperature_mean_2020_2022',
+  description: 'surfacetemperature_mean_2016_2025',
+  fileFormat: 'GeoTIFF',
+});
+
+// get 2025 mean -------------------------------------------------------------
+var mean_heat_2025 = landsat8
+                  .filterDate('2025-05-01', '2025-10-01')
+                  .select('ST_B10')
+                  .reduce(ee.Reducer.mean())
+                  .clip(nyc);
+
+var visParams = {min: 44500, max: 49000, palette: palettes.colorbrewer.Spectral[9]};
+Map.addLayer(mean_heat_2025, visParams, "2025 mean temp");
+          
+Export.image.toDrive({
+  image: mean_heat_2025,
+  scale: 30,
+  description: 'surfacetemperature_mean_2025_2025',
   fileFormat: 'GeoTIFF',
 });
 
 
-// get overall mean
+// get 2016 mean -------------------------------------------------------------
+var mean_heat_2016 = landsat8
+                  .filterDate('2016-05-01', '2016-10-01')
+                  .select('ST_B10')
+                  .reduce(ee.Reducer.mean())
+                  .clip(nyc);
+
+var visParams = {min: 44500, max: 49000, palette: palettes.colorbrewer.Spectral[9]};
+Map.addLayer(mean_heat_2016, visParams, "2016 mean temp");
+          
+Export.image.toDrive({
+  image: mean_heat_2016,
+  scale: 30,
+  description: 'surfacetemperature_mean_2016_2016',
+  fileFormat: 'GeoTIFF',
+});
+
+
+// get 5 year median -------------------------------------------------------------
 var median_heat = landsat8
                   .select('ST_B10')
                   .reduce(ee.Reducer.median())
                   .clip(nyc);
                   
-var visParams = {min: 45000, max: 50000, palette: palettes.colorbrewer.Spectral[9].reverse()};
-Map.addLayer(median_heat, visParams, "overall median temp");
-          
+var visParams = {min: 44500, max: 49000, palette: palettes.colorbrewer.Spectral[9]};
+Map.addLayer(median_heat, visParams, "10yr median temp");
+        
 Export.image.toDrive({
   image: median_heat,
   scale: 30,
-  description: 'surfacetemperature_median_2020_2022',
+  description: 'surfacetemperature_mean_2016_2025',
   fileFormat: 'GeoTIFF',
 });
